@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Prompty.Core;
 
-namespace ContosoChatAPI.Evaluations
+namespace SummarizationAPI.Evaluations
 {
     public static class Evaluation
     {
