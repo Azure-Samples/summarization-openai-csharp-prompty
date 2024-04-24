@@ -6,7 +6,7 @@ namespace Prompty.Core
 {
     public class PromptyModelConfig
     {
-
+        // azure open ai
         [YamlMember(Alias = "type")]
         public ModelType? ModelType;
 
@@ -21,6 +21,12 @@ namespace Prompty.Core
 
         [YamlMember(Alias = "api_key")]
         public string ApiKey { get; set; }
+
+        //open ai props
+        [YamlMember(Alias = "name")]
+        public string Name { get; set; }
+        [YamlMember(Alias = "organization")]
+        public string Organization { get; set; }
 
     }
 }

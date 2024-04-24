@@ -4,12 +4,18 @@ using Prompty.Core.Types;
 
 namespace Prompty.Core.Parsers
 {
-    public class PromptyChatParser
+    public class PromptyChatParser : IInvoker
     {
         private string _path;
-        public PromptyChatParser(Prompty prompty)
+        public PromptyChatParser(Prompty prompty, InvokerFactory invoker)
         {
             _path = prompty.FilePath;
+            invoker.Register(InvokerType.Parser, ParserType.Chat.ToString(), this);
+
+            //just in case someone makes a full prompty for embedding, completion, or image...
+            invoker.Register(InvokerType.Parser, ParserType.Embedding.ToString(), new NoOpInvoker());
+            invoker.Register(InvokerType.Parser, ParserType.Image.ToString(),  new NoOpInvoker());
+            invoker.Register(InvokerType.Parser, ParserType.Completion.ToString(), new NoOpInvoker());
         }
 
 
@@ -106,7 +112,7 @@ namespace Prompty.Core.Parsers
 
 
 
-        public Prompty ParseTemplate(Prompty data)
+        public async Task<BaseModel> Invoke(BaseModel data)
         {
             var roles = (RoleType[])Enum.GetValues(typeof(RoleType));
             var messages = new List<Dictionary<string, string>>();

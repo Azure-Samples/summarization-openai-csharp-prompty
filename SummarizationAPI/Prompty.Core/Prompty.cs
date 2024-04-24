@@ -1,57 +1,52 @@
 ﻿using Prompty.Core.Parsers;
 using Prompty.Core.Renderers;
+using Prompty.Core.Processors;
 using Prompty.Core.Executors;
 using YamlDotNet.Serialization;
 using Prompty.Core.Types;
-using Azure.AI.OpenAI;
+using System.Dynamic;
+using Newtonsoft.Json.Linq;
 
 namespace Prompty.Core
 {
 
-    public class Prompty()
+    public class Prompty() : BaseModel
     {
         // PromptyModelConfig model, string prompt, bool isFromSettings = true
         // TODO: validate  the prompty attributes needed, what did I miss that should be included?
         [YamlMember(Alias = "name")]
-        public string? Name;
+        public string Name;
 
         [YamlMember(Alias = "description")]
-        public string? Description;
+        public string Description;
+
+        [YamlMember(Alias = "version")]
+        public string Version;
 
         [YamlMember(Alias = "tags")]
-        public List<string>? Tags;
+        public List<string> Tags;
 
         [YamlMember(Alias = "authors")]
-        public List<string>? Authors;
+        public List<string> Authors;
 
         [YamlMember(Alias = "inputs")]
         public Dictionary<string, dynamic> Inputs;
 
-        [YamlMember(Alias = "parameters")]
-        public Dictionary<string, dynamic> Parameters;
+        [YamlMember(Alias = "outputs")]
+        public Dictionary<string, dynamic>? Outputs;
+
 
         [YamlMember(Alias = "model")]
-        public PromptyModelConfig Model;
+        public PromptyModel Model = new PromptyModel();
 
-        [YamlMember(Alias = "api")]
-        public ApiType? modelApiType;
-
-        public string? Prompt { get; set; }
-        public List<Dictionary<string, string>> Messages { get; set; }
-        public ChatResponseMessage ChatResponseMessage { get; set; }
-        public Completions CompletionResponseMessage { get; set; }
-        public Embeddings EmbeddingResponseMessage { get; set; }
-        public ImageGenerations ImageResponseMessage { get; set; }
-        public List<ChatCompletionsToolCall> ToolCalls { get; set; }
-
+        public TemplateType TemplateFormatType;
         public string FilePath;
+        public bool FromContent = false;
 
         // This is called from Execute to load a prompty file from location to create a Prompty object.
         // If sending a Prompty Object, this will not be used in execute.
-        public Prompty Load(string promptyFileName, Prompty prompty)
+        public static Prompty Load(string promptyFileName, Prompty prompty)
         {
-            //Check for appsettings.json config and set to that first
-            prompty = Helpers.GetPromptyModelConfigFromSettings(prompty);
 
             //Then load settings from prompty file and override if not null
             var promptyFileInfo = new FileInfo(promptyFileName);
@@ -69,19 +64,52 @@ namespace Prompty.Core
             return prompty;
         }
 
-        public async Task<Prompty> Execute(Prompty? prompty)
+        // Method to Execute Prompty, can send Prompty object or a string
+        // This is the main method that will be called to execute the prompty file
+        public async Task<Prompty> Execute(string promptyFileName = null,
+                                            Prompty? prompty = null,
+                                            bool raw = false)
         {
 
-            var render = new RenderPromptLiquidTemplate(prompty);
-            render.RenderTemplate();
+            // check if promptyFileName is null or if prompty is null
+            if (promptyFileName == null && prompty == null)
+            {
+                throw new ArgumentNullException("PromptyFileName or Prompty object must be provided");
+            }
+            if (prompty == null)
+            {
+                prompty = new Prompty();
+            }
+
+            prompty = Load(promptyFileName, prompty);
+
+            // create invokerFactory
+            var invokerFactory = new InvokerFactory();
+
+            // Render
+            //this gives me the right invoker for the renderer specificed in the prompty
+            //invoker should be a singleton
+            //name of invoker should be unique to the process
+            //var typeinvoker = invokerFactory.GetRenderer(prompty.TemplateFormatType);
+
+            var render = new RenderPromptLiquidTemplate(prompty, invokerFactory);
+            await render.Invoke(prompty);
 
             // Parse
-            var parser = new PromptyChatParser(prompty);
-            parser.ParseTemplate(prompty);
+            var parser = new PromptyChatParser(prompty, invokerFactory);
+            await parser.Invoke(prompty);
 
             // Execute
-            var executor = new AzureOpenAIExecutor(prompty);
-            await executor.GetChatCompletiom(prompty);
+            var executor = new AzureOpenAIExecutor(prompty, invokerFactory);
+            await executor.Invoke(prompty);
+
+
+            if (!raw)
+            {
+                // Process
+                var processor = new OpenAIProcessor(prompty, invokerFactory);
+                await processor.Invoke(prompty);
+            }
 
 
             return prompty;

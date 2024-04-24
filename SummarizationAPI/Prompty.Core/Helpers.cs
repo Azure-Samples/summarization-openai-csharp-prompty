@@ -10,7 +10,7 @@ namespace Prompty.Core
         // This is to load the appsettings.json file config 
         // These are the base configuration settings for the prompty file
         // These can be overriden by the prompty file, or the execute method
-        public static Prompty GetPromptyModelConfigFromSettings(Prompty prompty)
+        public static PromptyModelConfig GetPromptyModelConfigFromSettings()
         {
             //TODO: default prompty json, can have multiple sections, need to loop thru sections?
             //TODO: account for multiple prompty.json files
@@ -29,6 +29,8 @@ namespace Prompty.Core
                 var azureEndpoint = section["azure_endpoint"];
                 var azureDeployment = section["azure_deployment"];
                 var apiKey = section["api_key"];
+
+
                 if (type != null)
                 {
                     //parse type to ModelType enum
@@ -51,11 +53,9 @@ namespace Prompty.Core
                 {
                     promptyModelConfig.ApiKey = apiKey;
                 }
-
-                prompty.Model = promptyModelConfig;
             }
 
-            return prompty;
+            return promptyModelConfig;
         }
 
 
@@ -90,46 +90,22 @@ namespace Prompty.Core
                 {
                     prompty.Inputs = promptyFrontMatter.Inputs;
                 }
-                if (promptyFrontMatter.Parameters != null)
-                {
-                    prompty.Parameters = promptyFrontMatter.Parameters;
-                }
-                if (promptyFrontMatter.modelApiType != null)
-                {
-                    //parse type to enum
-                    prompty.modelApiType = promptyFrontMatter.modelApiType;
-                }
+                // parse out model params
                 if (promptyFrontMatter.Model != null)
                 {
-                    //check for each prop of promptymodelconfig and override if not null
-                    if (promptyFrontMatter.Model.ModelType != null)
-                    {
-                        //parse type to enum
-                        prompty.Model.ModelType = promptyFrontMatter.Model.ModelType;
-                    }
-                    if (promptyFrontMatter.Model.ApiVersion != null)
-                    {
-                        prompty.Model.ApiVersion = promptyFrontMatter.Model.ApiVersion;
-                    }
-                    if (promptyFrontMatter.Model.AzureEndpoint != null)
-                    {
-                        prompty.Model.AzureEndpoint = promptyFrontMatter.Model.AzureEndpoint;
-                    }
-                    if (promptyFrontMatter.Model.AzureDeployment != null)
-                    {
-                        prompty.Model.AzureDeployment = promptyFrontMatter.Model.AzureDeployment;
-                    }
-                    if (promptyFrontMatter.Model.ApiKey != null)
-                    {
-                        prompty.Model.ApiKey = promptyFrontMatter.Model.ApiKey;
-                    }
-                }
+                    //set model settings
+                    prompty.Model.Api = promptyFrontMatter.Model.Api;
+                    prompty.Model.ModelConfiguration = promptyFrontMatter.Model.ModelConfiguration;
+                    //override from appsettings
+                    prompty.Model.ModelConfiguration = Helpers.GetPromptyModelConfigFromSettings();
+                    prompty.Model.Parameters = promptyFrontMatter.Model.Parameters;
+                    prompty.Model.Response = promptyFrontMatter.Model.Response;
 
+                }
             }
 
             return prompty;
 
         }
-
     }
 }

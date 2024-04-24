@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Prompty.Core.Types
 {
-    public enum ModelType
+    public enum ProcessorType
     {
-        azure_openai,
-        openai
+        openai,
+        azure
     }
 }

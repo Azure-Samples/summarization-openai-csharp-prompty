@@ -6,47 +6,57 @@ using System.Collections;
 
 namespace Prompty.Core.Executors
 {
-    public class AzureOpenAIExecutor
+    public class AzureOpenAIExecutor : IInvoker
     {
         private readonly OpenAIClient client;
         private readonly string api;
         private readonly string deployment;
-        private readonly Dictionary<string, dynamic> parameters;
+        private readonly dynamic? parameters;
         private readonly ChatCompletionsOptions chatCompletionsOptions;
         private readonly CompletionsOptions completionsOptions;
         private readonly ImageGenerationOptions imageGenerationOptions;
         private readonly EmbeddingsOptions embeddingsOptions;
 
-        public AzureOpenAIExecutor(Prompty prompty)
+        public AzureOpenAIExecutor(Prompty prompty, InvokerFactory invoker)
         {
+            var invokerName = ModelType.azure_openai.ToString();
+            invoker.Register(InvokerType.Executor, invokerName, this);
             client = new OpenAIClient(
-                endpoint: new Uri(prompty.Model.AzureEndpoint),
-                keyCredential: new AzureKeyCredential(prompty.Model.ApiKey)
+                endpoint: new Uri(prompty.Model.ModelConfiguration.AzureEndpoint),
+                keyCredential: new AzureKeyCredential(prompty.Model.ModelConfiguration.ApiKey)
             );
 
-            api = prompty.modelApiType.ToString();
-            parameters = prompty.Parameters;
+            api = prompty.Model.Api.ToString();
+            parameters = prompty.Model.Parameters;
 
             chatCompletionsOptions = new ChatCompletionsOptions()
             {
-                DeploymentName = prompty.Model.AzureDeployment
+                DeploymentName = prompty.Model.ModelConfiguration.AzureDeployment
             };
             completionsOptions = new CompletionsOptions()
             {
-                DeploymentName = prompty.Model.AzureDeployment
+                DeploymentName = prompty.Model.ModelConfiguration.AzureDeployment
             };
             imageGenerationOptions = new ImageGenerationOptions()
             {
-                DeploymentName = prompty.Model.AzureDeployment
+                DeploymentName = prompty.Model.ModelConfiguration.AzureDeployment
             };
             embeddingsOptions = new EmbeddingsOptions()
             {
-                DeploymentName = prompty.Model.AzureDeployment
+                DeploymentName = prompty.Model.ModelConfiguration.AzureDeployment
             };
 
         }
+        //TODO: fix dynamics here
+        public async Task WriteSpans(dynamic span, Dictionary<string, dynamic> values)
+        {
+            foreach (var (attribute, value) in values)
+            {
+                span.SetAttribute(attribute, value);
+            }
+        }
 
-        public async Task<Prompty> GetChatCompletiom(Prompty prompty)
+        public async Task<BaseModel> Invoke(BaseModel data)
         {
 
             if (api == ApiType.Chat.ToString())
@@ -55,35 +65,35 @@ namespace Prompty.Core.Executors
                 {
 
 
-                    for (int i = 0; i < prompty.Messages.Count; i++)
+                    for (int i = 0; i < data.Messages.Count; i++)
                     {
                         //parse role sting to enum value
-                        var roleEnum = Enum.Parse<RoleType>(prompty.Messages[i]["role"]);
+                        var roleEnum = Enum.Parse<RoleType>(data.Messages[i]["role"]);
 
                         switch (roleEnum)
                         {
                             case RoleType.user:
-                                var userMessage = new ChatRequestUserMessage(prompty.Messages[i]["content"]);
+                                var userMessage = new ChatRequestUserMessage(data.Messages[i]["content"]);
                                 chatCompletionsOptions.Messages.Add(userMessage);
                                 break;
                             case RoleType.system:
-                                var systemMessage = new ChatRequestSystemMessage(prompty.Messages[i]["content"]);
+                                var systemMessage = new ChatRequestSystemMessage(data.Messages[i]["content"]);
                                 chatCompletionsOptions.Messages.Add(systemMessage);
                                 break;
                             case RoleType.assistant:
-                                var assistantMessage = new ChatRequestAssistantMessage(prompty.Messages[i]["content"]);
+                                var assistantMessage = new ChatRequestAssistantMessage(data.Messages[i]["content"]);
                                 chatCompletionsOptions.Messages.Add(assistantMessage);
                                 break;
                             case RoleType.function:
                                 //TODO: Fix parsing for Function role
-                                var functionMessage = new ChatRequestFunctionMessage("name", prompty.Messages[i]["content"]);
+                                var functionMessage = new ChatRequestFunctionMessage("name", data.Messages[i]["content"]);
                                 chatCompletionsOptions.Messages.Add(functionMessage);
                                 break;
                         }
 
                     }
                     var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
-                    prompty.ChatResponseMessage = response.Value.Choices[0].Message;
+                    data.ChatResponseMessage = response.Value.Choices[0].Message;
 
                 }
                 catch (Exception error)
@@ -96,7 +106,7 @@ namespace Prompty.Core.Executors
                 try
                 {
                     var response = await client.GetCompletionsAsync(completionsOptions);
-                    prompty.CompletionResponseMessage = response.Value;
+                    data.CompletionResponseMessage = response.Value;
 
                 }
                 catch (Exception error)
@@ -104,35 +114,35 @@ namespace Prompty.Core.Executors
                     Console.Error.WriteLine(error);
                 }
             }
-            else if (api == ApiType.Embedding.ToString())
-            {
-                try
-                {
-                    var response = await client.GetEmbeddingsAsync(embeddingsOptions);
-                    prompty.EmbeddingResponseMessage = response.Value;
+            //else if (api == ApiType.Embedding.ToString())
+            //{
+            //    try
+            //    {
+            //        var response = await client.GetEmbeddingsAsync(embeddingsOptions);
+            //        data.EmbeddingResponseMessage = response.Value;
 
-                }
-                catch (Exception error)
-                {
-                    Console.Error.WriteLine(error);
-                }
-            }
-            else if (api == ApiType.Image.ToString())
-            {
-                try
-                {
-                    var response = await client.GetImageGenerationsAsync(imageGenerationOptions);
-                    prompty.ImageResponseMessage = response.Value;
+            //    }
+            //    catch (Exception error)
+            //    {
+            //        Console.Error.WriteLine(error);
+            //    }
+            //}
+            //else if (api == ApiType.Image.ToString())
+            //{
+            //    try
+            //    {
+            //        var response = await client.GetImageGenerationsAsync(imageGenerationOptions);
+            //        data.ImageResponseMessage = response.Value;
 
-                }
-                catch (Exception error)
-                {
-                    Console.Error.WriteLine(error);
-                }
-            }
+            //    }
+            //    catch (Exception error)
+            //    {
+            //        Console.Error.WriteLine(error);
+            //    }
+            //}
 
 
-            return prompty;
+            return data;
         }
 
     }

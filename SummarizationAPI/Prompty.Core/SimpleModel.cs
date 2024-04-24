@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Prompty.Core.Types
+namespace Prompty.Core
 {
-    public enum ModelType
+    public class SimpleModel<T> : BaseModel
     {
-        azure_openai,
-        openai
+        public T Item { get; set; }
     }
 }

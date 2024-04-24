@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Prompty.Core.Types
 {
-    public enum ModelType
+    public enum InvokerType
     {
-        azure_openai,
-        openai
+        Renderer,
+        Parser,
+        Executor,
+        Processor
     }
 }

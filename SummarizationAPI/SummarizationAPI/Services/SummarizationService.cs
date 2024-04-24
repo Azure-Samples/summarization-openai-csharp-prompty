@@ -1,5 +1,4 @@
-﻿using ContosoChatAPI.Evaluations;
-using Prompty.Core;
+﻿
 using Newtonsoft.Json;
 
 namespace SummarizationAPI.Summarization

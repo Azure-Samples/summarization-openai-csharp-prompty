@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace Prompty.Core.Types
 {
-    public enum ModelType
+    public enum TemplateType
     {
-        azure_openai,
-        openai
+        fstring,
+        jinja2,
+        nunjucks,
+        handlebars,
+        liquid
     }
 }
