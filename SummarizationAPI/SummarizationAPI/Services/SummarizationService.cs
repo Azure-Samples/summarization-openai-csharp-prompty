@@ -42,10 +42,9 @@ namespace SummarizationAPI.Summarization
             // Create score dict with results
             var score = new Dictionary<string, string>();
 
-            score["groundedness"] = await Evaluation.Evaluate(problem, problem, result, "./Evaluations/groundedness.prompty");
-            score["coherence"] = await Evaluation.Evaluate(problem, problem, result, "./Evaluations/coherence.prompty");
-            score["relevance"] = await Evaluation.Evaluate(problem, problem, result, "./Evaluations/relevance.prompty");
-            score["fluency"] = await Evaluation.Evaluate(problem, problem, result, "./Evaluations/fluency.prompty");
+            score["coherence"] = await Evaluation.Evaluate(problem, result, "./Evaluations/coherence.prompty");
+            score["relevance"] = await Evaluation.Evaluate(problem, result, "./Evaluations/relevance.prompty");
+            score["fluency"] = await Evaluation.Evaluate(problem, result, "./Evaluations/fluency.prompty");
 
             Console.WriteLine($"Result: {result}");
             //Console.WriteLine($"Score: {string.Join(", ", score)}");

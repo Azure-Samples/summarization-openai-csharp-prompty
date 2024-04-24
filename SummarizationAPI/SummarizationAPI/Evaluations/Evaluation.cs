@@ -19,7 +19,7 @@ namespace SummarizationAPI.Evaluations
             foreach (var line in lines)
             {
                 var data = JObject.Parse(line);
-                var result = await Evaluate(data["question"].ToString(), data["context"], data["answer"].ToString(), path);
+                var result = await Evaluate(data["problem"].ToString(), data["summary"].ToString(), path);
                 results.Add(result);
             }
 
@@ -27,13 +27,12 @@ namespace SummarizationAPI.Evaluations
         }
 
         // Run a single coherence evaluation
-        public static async Task<string> Evaluate(string question, object context, string answer, string path)
+        public static async Task<string> Evaluate(string problem, string summary, string path)
         {
             var inputs = new Dictionary<string, dynamic>
             {
-                { "answer", answer },
-                { "context", context },
-                { "question", question }
+                { "problem", problem },
+                { "summary", summary }
             };
 
             var prompty = new Prompty.Core.Prompty();

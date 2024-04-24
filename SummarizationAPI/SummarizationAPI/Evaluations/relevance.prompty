@@ -1,5 +1,5 @@
 ---
-name: QnA Coherence Evaluation
+name: QnA Relevance Evaluation
 description: Compute the coherence of the answer base on the question using llm.
 model:
   api: chat
@@ -7,44 +7,41 @@ model:
     type: azure_openai
     azure_deployment: gpt-35-turbo
     api_version: 2023-07-01-preview
-inputs:
-  question: What feeds all the fixtures in low voltage tracks instead of each light having a line-to-low voltage transformer?
-  context: Track lighting, invented by Lightolier, was popular at one period of time because it was much easier to install than recessed lighting, and individual fixtures are decorative and can be easily aimed at a wall. It has regained some popularity recently in low-voltage tracks, which often look nothing like their predecessors because they do not have the safety issues that line-voltage systems have, and are therefore less bulky and more ornamental in themselves. A master transformer feeds all of the fixtures on the track or rod with 12 or 24 volts, instead of each light fixture having its own line-to-low voltage transformer. There are traditional spots and floods, as well as other small hanging fixtures. A modified version of this is cable lighting, where lights are hung from or clipped to bare metal cables under tension
-  answer: The main transformer is the object that feeds all the fixtures in low voltage tracks.
 ---
 System:
-You are an AI assistant. You will be given the definition of an evaluation metric for assessing the quality of an answer in a question-answering task. Your job is to compute an accurate evaluation score using the provided evaluation metric.
+You are an AI assistant. You will be given the definition of an evaluation metric for assessing the quality of an problem summary in a summarization task. Your job is to compute an accurate evaluation score using the provided evaluation metric.
 
 User:
-Coherence of an answer is measured by how well all the sentences fit together and sound naturally as a whole. Consider the overall quality of the answer when evaluating coherence. Given the question and answer, score the coherence of answer between one to five stars using the following rating scale:
-One star: the answer completely lacks coherence
-Two stars: the answer mostly lacks coherence
-Three stars: the answer is partially coherent
-Four stars: the answer is mostly coherent
-Five stars: the answer has perfect coherency
+Relevance(1-5) - selection of important content from the source.
+The summary should include only important information from the source document.
+
+1. Read the summary and the source document carefully.
+2. Compare the summary to the source document and identify the main points of the article.
+3. Verify it breaks out key information sections.
+3. Assign a relevance score from 1 to 5.
 
 This rating value should always be an integer between 1 and 5. So the rating produced should be 1 or 2 or 3 or 4 or 5.
 
-question: What is your favorite indoor activity and why do you enjoy it?
-answer: I like pizza. The sun is shining.
-stars: 1
+problem: What is your favorite indoor activity and why do you enjoy it?
+summary: I like pizza. The sun is shining.
+score: 1
 
-question: Can you describe your favorite movie without giving away any spoilers?
-answer: It is a science fiction movie. There are dinosaurs. The actors eat cake. People must stop the villain.
-stars: 2
+problem: Can you describe your favorite movie without giving away any spoilers?
+summary: It is a science fiction movie. There are dinosaurs. The actors eat cake. People must stop the villain.
+score: 2
 
-question: What are some benefits of regular exercise?
-answer: Regular exercise improves your mood. A good workout also helps you sleep better. Trees are green.
-stars: 3
+problem: What are some benefits of regular exercise?
+summary: Regular exercise improves your mood. A good workout also helps you sleep better. Trees are green.
+score: 3
 
-question: How do you cope with stress in your daily life?
-answer: I usually go for a walk to clear my head. Listening to music helps me relax as well. Stress is a part of life, but we can manage it through some activities.
-stars: 4
+problem: How do you cope with stress in your daily life?
+summary: I usually go for a walk to clear my head. Listening to music helps me relax as well. Stress is a part of life, but we can manage it through some activities.
+score: 4
 
-question: What can you tell me about climate change and its effects on the environment?
-answer: Climate change has far-reaching effects on the environment. Rising temperatures result in the melting of polar ice caps, contributing to sea-level rise. Additionally, more frequent and severe weather events, such as hurricanes and heatwaves, can cause disruption to ecosystems and human societies alike.
-stars: 5
+problem: "I need to open a problem report for part number ABC123. The brake rotor is overheating causing glazing on the pads. We track temperature above 24 degrees Celsius and we are seeing this after three to four laps during runs when the driver is braking late and aggressively into corners. The issue severity is to be prioritized as a 2. This is impacting the front brake assembly EFG234."
+summary: "Synposis: Overheating brake rotor causing glazing on the pads during aggressive braking into corners.\n\nDescription: The brake rotor with part number ABC123 is overheating, leading to glazing on the pads. This issue occurs after three to four laps during runs, specifically when the driver is braking late and aggressively into corners.\n\nProblem Item: Part number ABC123 (brake rotor)\n\nEnvironmental description: The issue is observed when the temperature exceeds 24 degrees Celsius.\n\nSequence of events: The problem occurs after three to four laps when the driver engages in late and aggressive braking into corners.\n\nTechincal priorty: The issue severity is prioritized as a 2.\n\nImpacts: This issue is impacting the front brake assembly EFG234.\n\nSeverity rating: The severity of the issue can be classified as medium."
+score: 5
 
-question: {{question}}
-answer: {{answer}}
-stars:
+problem: {{problem}}
+summary: {{summary}}
+score:
