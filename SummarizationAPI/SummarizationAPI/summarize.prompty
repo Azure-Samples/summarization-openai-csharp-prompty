@@ -1,6 +1,6 @@
 ---
-name: Contoso Chat Prompt
-description: A retail assistent for Contoso Outdoors products retailer.
+name: Summarize_Prompt
+description: Summarization prompt for Contoso Manufacturing automation.
 authors:
   - Cassie Breviu
 model:

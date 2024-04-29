@@ -1,5 +1,5 @@
 ---
-name: Fluency Evaluation
+name: Fluency_Evaluation
 description: Compute the Fluency of the answer base on the question using llm.
 model:
   api: chat

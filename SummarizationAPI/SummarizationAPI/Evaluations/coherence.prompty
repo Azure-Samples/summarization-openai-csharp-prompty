@@ -1,5 +1,5 @@
 ---
-name: Coherence Evaluation
+name: Coherence_Evaluation
 description: Compute the coherence of the answer base on the question using llm.
 model:
   api: chat
