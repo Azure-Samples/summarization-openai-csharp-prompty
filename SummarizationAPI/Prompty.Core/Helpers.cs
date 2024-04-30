@@ -28,8 +28,6 @@ namespace Prompty.Core
                 var apiVersion = section["api_version"];
                 var azureEndpoint = section["azure_endpoint"];
                 var azureDeployment = section["azure_deployment"];
-                var apiKey = section["api_key"];
-
 
                 if (type != null)
                 {
@@ -48,10 +46,6 @@ namespace Prompty.Core
                 if (azureDeployment != null)
                 {
                     promptyModelConfig.AzureDeployment = azureDeployment;
-                }
-                if (apiKey != null)
-                {
-                    promptyModelConfig.ApiKey = apiKey;
                 }
             }
 

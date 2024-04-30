@@ -1,8 +1,6 @@
 ﻿using Azure.AI.OpenAI;
-using Azure;
-using System.Text.Json;
+using Azure.Identity;
 using Prompty.Core.Types;
-using System.Collections;
 
 namespace Prompty.Core.Executors
 {
@@ -23,7 +21,7 @@ namespace Prompty.Core.Executors
             invoker.Register(InvokerType.Executor, invokerName, this);
             client = new OpenAIClient(
                 endpoint: new Uri(prompty.Model.ModelConfiguration.AzureEndpoint),
-                keyCredential: new AzureKeyCredential(prompty.Model.ModelConfiguration.ApiKey)
+                tokenCredential: new DefaultAzureCredential()
             );
 
             api = prompty.Model.Api.ToString();

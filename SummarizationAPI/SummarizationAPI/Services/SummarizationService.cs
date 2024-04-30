@@ -8,7 +8,6 @@ namespace SummarizationAPI.Summarization
     {
         private readonly IConfiguration _prompty;
         private readonly string _oaiEndpoint;
-        private readonly string _oaiKey;
 
         public SummarizationService()
         {
@@ -19,8 +18,6 @@ namespace SummarizationAPI.Summarization
             _prompty = config.GetSection("prompty");
 
             _oaiEndpoint = _prompty["azure_endpoint"];
-            _oaiKey = _prompty["api_key"];
-
         }
 
         public async Task<string> GetResponseAsync(string problem, List<string> chatHistory)
