@@ -1,65 +1,48 @@
-﻿
-using Azure.AI.OpenAI;
-using Newtonsoft.Json;
-using SummarizationAPI.Evaluations;
-using Microsoft.SemanticKernel;
-using Azure;
+﻿using Microsoft.SemanticKernel;
+using System.Text.Json;
 
-namespace SummarizationAPI.Summarization
+namespace SummarizationAPI.Summarization;
+
+public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationService> logger)
 {
-    public class SummarizationService
+    private readonly Kernel _kernel = kernel;
+    private readonly ILogger<SummarizationService> _logger = logger;
+
+    private readonly KernelFunction _summarize = kernel.CreateFunctionFromPrompty("summarize.prompty");
+    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "coherence.prompty"));
+    private readonly KernelFunction _relevance = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "relevance.prompty"));
+    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "fluency.prompty"));
+
+    public async Task<string> GetResponseAsync(string problem)
     {
-        private readonly Evaluation _evaluation;
-        private readonly ILogger<SummarizationService> _logger;
-        private readonly OpenAIClient _openaiClient;
-        private readonly string _deploymentName;
-
-        public SummarizationService(ILogger<SummarizationService> logger, OpenAIClient openaiClient, IConfiguration config, Evaluation evaluation)
+        _logger.LogInformation("Getting summary for {Problem}", problem);
+        var summary = await _summarize.InvokeAsync<string>(_kernel, new()
         {
-            _logger = logger;
-            _openaiClient = openaiClient;
-            _deploymentName = config["OpenAi:deployment"];
-            _evaluation = evaluation;
+            { "problem", problem }
+        });
+
+        var score = new Dictionary<string, string?>
+        {
+            ["coherence"] = await Evaluate(_coherence, problem, summary),
+            ["relevance"] = await Evaluate(_relevance, problem, summary),
+            ["fluency"] = await Evaluate(_fluency, problem, summary)
+        };
+
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Result: {Summary}", summary);
+            _logger.LogInformation("Score: {Score}", string.Join(", ", score));
         }
 
-        public async Task<string> GetResponseAsync(string problem, List<string> chatHistory)
+        return JsonSerializer.Serialize(new { summary, score });
+    }
+
+    private Task<string?> Evaluate(KernelFunction func, string problem, string? summary)
+    {
+        return func.InvokeAsync<string>(_kernel, new()
         {
-            _logger.LogInformation($"Inputs: Problem = {problem}");
-
-            var kernel = Kernel.CreateBuilder()
-                          .AddAzureOpenAIChatCompletion(_deploymentName, _openaiClient)
-                          .Build();
-
-            var cwd = Directory.GetCurrentDirectory();
-            var chatPromptyPath = Path.Combine(cwd, "summarize.prompty");
-
-#pragma warning disable SKEXP0040 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            var kernelFunction = kernel.CreateFunctionFromPrompty(chatPromptyPath);
-#pragma warning restore SKEXP0040 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
-            _logger.LogInformation("Getting result...");
-            var arguments = new KernelArguments(){
-                { "problem", problem }
-            };
-
-            var kernelResult = await kernelFunction.InvokeAsync(kernel, arguments);
-            //get string result
-
-            // Create score dict with results
-            var score = new Dictionary<string, string>();
-            var message = kernelResult.ToString();
-
-            score["coherence"] = await _evaluation.Evaluate(problem, message, "./Evaluations/coherence.prompty");
-            score["relevance"] = await _evaluation.Evaluate(problem, message, "./Evaluations/relevance.prompty");
-            score["fluency"] = await _evaluation.Evaluate(problem, message, "./Evaluations/fluency.prompty");
-
-            _logger.LogInformation($"Result: {kernelResult}");
-            _logger.LogInformation($"Score: {string.Join(", ", score)}");
-            // add score to result
-
-            var result = JsonConvert.SerializeObject(new { message, score });
-
-            return result;
-        }
+            { "problem", problem },
+            { "summary", summary }
+        });
     }
 }
