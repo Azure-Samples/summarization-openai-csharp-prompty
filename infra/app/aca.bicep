@@ -10,13 +10,7 @@ param serviceName string = 'aca'
 param openAiDeploymentName string
 param openAiEndpoint string
 param openAiApiVersion string
-param openAiEmbeddingDeploymentName string
 param openAiType string
-param cosmosEndpoint string
-param cosmosDatabaseName string
-param cosmosContainerName string
-param aiSearchEndpoint string
-param aiSearchIndexName string
 param appinsights_Connectionstring string
 
 
@@ -36,26 +30,6 @@ module app '../core/host/container-app-upsert.bicep' = {
         value: identityId
       }
       {
-        name: 'COSMOSDB__ENDPOINT'
-        value: cosmosEndpoint
-      }
-      {
-        name: 'COSMOSDB__DATABASENAME'
-        value: cosmosDatabaseName
-      }
-      {
-        name: 'COSMOSDB__CONTAINERNAME'
-        value: cosmosContainerName
-      }
-      {
-        name: 'AZUREAISEARCH__ENDPOINT'
-        value: aiSearchEndpoint
-      }
-      {
-        name: 'AZUREAISEARCH__INDEX_NAME'
-        value: aiSearchIndexName
-      }
-      {
         name: 'OPENAI__TYPE'
         value: openAiType
       }
@@ -70,10 +44,6 @@ module app '../core/host/container-app-upsert.bicep' = {
       {
         name: 'OPENAI__DEPLOYMENT'
         value: openAiDeploymentName
-      }
-      {
-        name: 'OPENAI__EMBEDDING_DEPLOYMENT'
-        value: openAiEmbeddingDeploymentName
       }
       {
         name: 'APPLICATIONINSIGHTS__CONNECTIONSTRING'

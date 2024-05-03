@@ -39,24 +39,6 @@ param openAiApiVersion string = ''
 @description('The type of the OpenAI resource')
 param openAiType string = 'azure'
 
-@description('The name of the search service')
-param searchServiceName string = ''
-
-@description('The name of the Cosmos account')
-param cosmosAccountName string = ''
-
-@description('The name of the OpenAI embedding deployment')
-param openAiEmbeddingDeploymentName string = ''
-
-@description('The name of the AI search index')
-param aiSearchIndexName string = 'contoso-products'
-
-@description('The name of the Cosmos database')
-param cosmosDatabaseName string = 'contoso-outdoor'
-
-@description('The name of the Cosmos container')
-param cosmosContainerName string = 'customers'
-
 @description('The name of the OpenAI deployment')
 param openAiDeploymentName string = ''
 
@@ -111,50 +93,6 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
           capacity: 30
         }
       }
-      {
-        name: openAiEmbeddingDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: 'text-embedding-ada-002'
-          version: '2'
-        }
-        sku: {
-          name: 'Standard'
-          capacity: 20
-        }
-      }
-    ]
-  }
-}
-
-module search 'core/search/search-services.bicep' = {
-  name: 'search'
-  scope: resourceGroup
-  params: {
-    name: !empty(searchServiceName) ? searchServiceName : '${prefix}-search-contoso'
-    location: location
-    semanticSearch: 'standard'
-    disableLocalAuth: true
-  }
-}
-
-module cosmos 'core/database/cosmos/sql/cosmos-sql-db.bicep' = {
-  name: 'cosmos'
-  scope: resourceGroup
-  params: {
-    accountName: !empty(cosmosAccountName) ? cosmosAccountName : 'cosmos-contoso-${resourceToken}'
-    databaseName: 'contoso-outdoor'
-    location: location
-    tags: union(tags, {
-        defaultExperience: 'Core (SQL)'
-        'hidden-cosmos-mmspecial': ''
-      })
-    containers: [
-      {
-        name: 'customers'
-        id: 'customers'
-        partitionKey: '/id'
-      }
     ]
   }
 }
@@ -207,46 +145,10 @@ module aca 'app/aca.bicep' = {
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
     openAiDeploymentName: !empty(openAiDeploymentName) ? openAiDeploymentName : 'gpt-35-turbo'
-    openAiEmbeddingDeploymentName: openAiEmbeddingDeploymentName
     openAiEndpoint: openAi.outputs.endpoint
     openAiType: openAiType
     openAiApiVersion: openAiApiVersion
-    aiSearchEndpoint: search.outputs.endpoint
-    aiSearchIndexName: aiSearchIndexName
-    cosmosEndpoint: cosmos.outputs.endpoint
-    cosmosDatabaseName: cosmosDatabaseName
-    cosmosContainerName: cosmosContainerName
     appinsights_Connectionstring: monitoring.outputs.applicationInsightsConnectionString
-  }
-}
-
-module aiSearchRole 'core/security/role.bicep' = {
-  scope: resourceGroup
-  name: 'ai-search-index-data-contributor'
-  params: {
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
-    roleDefinitionId: '8ebe5a00-799e-43f5-93ac-243d3dce84a7' //Search Index Data Contributor
-    principalType: 'ServicePrincipal'
-  }
-}
-
-module cosmosRoleContributor 'core/security/role.bicep' = {
-  scope: resourceGroup
-  name: 'ai-search-service-contributor'
-  params: {
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
-    roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
-    principalType: 'ServicePrincipal'
-  }
-}
-
-module cosmosAccountRole 'core/security/role-cosmos.bicep' = {
-  scope: resourceGroup
-  name: 'cosmos-account-role'
-  params: {
-    principalId: managedIdentity.outputs.managedIdentityPrincipalId
-    databaseAccountId: cosmos.outputs.accountId
-    databaseAccountName: cosmos.outputs.accountName
   }
 }
 
@@ -260,25 +162,6 @@ module appinsightsAccountRole 'core/security/role.bicep' = {
   }
 }
 
-module userAiSearchRole 'core/security/role.bicep' = if (!empty(principalId)) {
-  scope: resourceGroup
-  name: 'user-ai-search-index-data-contributor'
-  params: {
-    principalId: principalId
-    roleDefinitionId: '8ebe5a00-799e-43f5-93ac-243d3dce84a7' //Search Index Data Contributor
-    principalType: 'User'
-  }
-}
-
-module userCosmosRoleContributor 'core/security/role.bicep' = if (!empty(principalId)) {
-  scope: resourceGroup
-  name: 'user-ai-search-service-contributor'
-  params: {
-    principalId: principalId
-    roleDefinitionId: '7ca78c08-252a-4471-8644-bb5ff32d4ba0' //Search Service Contributor
-    principalType: 'User'
-  }
-}
 
 module openaiRoleUser 'core/security/role.bicep' = if (!empty(principalId)) {
   scope: resourceGroup
@@ -287,16 +170,6 @@ module openaiRoleUser 'core/security/role.bicep' = if (!empty(principalId)) {
     principalId: principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd' //Cognitive Services OpenAI User
     principalType: 'User'
-  }
-}
-
-module userCosmosAccountRole 'core/security/role-cosmos.bicep' = if (!empty(principalId)) {
-  scope: resourceGroup
-  name: 'user-cosmos-account-role'
-  params: {
-    principalId: principalId
-    databaseAccountId: cosmos.outputs.accountId
-    databaseAccountName: cosmos.outputs.accountName
   }
 }
 
