@@ -1,57 +1,130 @@
-# Project Name
+---
+name: Ticket Processing with Azure AI
+description: Process tickets automatically with Azure AI LLMs and Speech Service.
+languages:
+- TBD
+products:
+- azure-openai
+- azure-ai-speech-service
+- azure
+page_type: sample
+urlFragment: TBD
+---
 
-(short, 1-3 sentenced, description of the project)
+# Automated Ticket Processing using Azure AI
 
-## Features
+Samples in JavaScript, .NET, and Java. Learn more at https://aka.ms/azai.
 
-This project framework provides the following features:
+---
 
-* Feature 1
-* Feature 2
-* ...
+# Table of Contents
 
-## Getting Started
+- [What is this sample?](#what-is-this-sample)
+- [Features](#features)
+- [Architecture Diagram](#architecture-diagram)
+- [Security](#security)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Quickstart](#quickstart)
+  - [Local Development](#local-development)
+- [Costs](#costs)  
+- [Security Guidelines](#security-guidelines)
+- [Resources](#resources)
 
-### Prerequisites
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=599293758&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&location=WestUs2)
+[![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure-samples/azure-search-openai-demo)
+
+# What is this sample
+
+In this sample we recieve issues reported by field and shop floor workers at a company called Contoso Manufacturing, a manufacturing company that makes car batteries. The issues are shared by the workers either live through microphone input or pre-recorded as audio files. We translate the input from speech to text and then use an LLM and Prompty or Promptflow to summarize the issue and return the results in a format we specify.
+
+This sample uses the **[Azure AI Speech Service](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/)** and **[Python SDk](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/quickstarts/setup-platform?pivots=programming-language-python&tabs=macos%2Cubuntu%2Cdotnetcli%2Cdotnet%2Cjre%2Cmaven%2Cnodejs%2Cmac%2Cvscode)** to translate the users speech into text. It leverages **Azure OpenAI** to summarize the text and **Prompty/Prompt Flow** to manage and insert the prompt into our code, and to evaluate prompt/LLM performance.
+
+By the end of deploying this template you should be able to:
+
+ 1. Describe what Azure AI Speech Service Python SDK provides.
+ 2. Explain prompt creation with Prompty/Prompt Flow. 
+ 3. Build, run, evaluate, and deploy, the summarization app to Azure.
+
+# Features
+
+* A UI Feature (tbd)
+* Audio interface to easily transmit the information while in the Field
+* Summarization from a Ticket from issues from the Field and Shop Floor workers
+
+**For Developers**
+* A Prompty file where the prompt is constructed
+* Built-in evaluations to test your Prompt Flow against a variety of test datasets with telemetry pushed to Azure AI Studio
+* Deployment available via GitHub actions or Azure AI SDK
+
+Add image
+
+(Embed demo video here)
+
+
+# Architecture Diagram
+Include a diagram describing the application (DevDiv is working with Designers on this part)
+
+# Security
+
+(Document security aspects and best practices per template configuration)
+
+* ex. keyless auth
+
+We can show how to set up keyless auth for the speech sdk with azd. More detailed info here: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/role-based-access-control 
+```
+#grant permissions using azd (this assigns a Cognitive Services User role)
+ az role assignment create \
+        --role "f2dc8367-1007-4938-bd23-fe263f013447" \
+        --assignee-object-id "$PRINCIPAL_ID" \
+        --scope /subscriptions/"$SUBSCRIPTION_ID"/resourceGroups/"$RESOURCE_GROUP" \
+        --assignee-principal-type User
+
+```
+
+# Getting Started
+
+## Prerequisites
 
 (ideally very short, if any)
-
+ 
+- Install [azd](https://aka.ms/install-azd)
+    - Windows: `winget install microsoft.azd`
+    - Linux: `curl -fsSL https://aka.ms/install-azd.sh | bash`
+    - MacOS: `brew tap azure/azd && brew install azd`
 - OS
 - Library version
+- This model uses [MODEL 1] and [MODEL 2] which may not be available in all Azure regions. Check for [up-to-date region availability](https://learn.microsoft.com/azure/ai-services/openai/concepts/models#standard-deployment-model-availability) and select a region during deployment accordingly
+    - We recommend using Sweden Central
+
 - ...
 
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
+## Quickstart
 (Add steps to get up and running quickly)
+ 
+1. Clone the repository and intialize the project: `azd init [name-of-repo]`
+2. ...
+3. Provision and deploy the project to Azure: `azd up`
+4. Set up CI/CD with `azd pipeline config`
+5. (Add steps to start up the sample app)
 
-1. git clone [repository clone url]
-2. cd [repository name]
-3. ...
+## Local Development
+Describe how to run and develop the app locally
 
+# Costs
+You can estimate the cost of this project's architecture with [Azure's pricing calculator](https://azure.microsoft.com/pricing/calculator/)
+ 
+- [Azure Product] - [plan type] [link to pricing for product](https://azure.microsoft.com/pricing/)
 
-## Demo
+# Security Guidelines
 
-A demo app is included to show how to use the project.
+TODO: team will add the guidelines here for best security practices.
 
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
+# Resources
 
 (Any additional resources or related projects)
-
+ 
 - Link to supporting information
 - Link to similar sample
+- [Develop Python apps that use Azure AI services](https://learn.microsoft.com/azure/developer/python/azure-ai-for-python-developers)
 - ...
