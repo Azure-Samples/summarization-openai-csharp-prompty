@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Evaluations\data.jsonl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Evaluations\data.jsonl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.11.2" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.9.1" />
 	  <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Liquid" Version="1.9.0-nightly-240430.6-09778cd6-alpha" />
 	  <PackageReference Include="Microsoft.SemanticKernel.Prompty" Version="1.9.0-nightly-240430.6-09778cd6-alpha" />

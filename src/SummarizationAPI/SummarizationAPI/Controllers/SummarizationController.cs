@@ -7,21 +7,21 @@ namespace SummarizationAPI.Controllers
     [Route("[controller]")]
     public class SummarizationController : ControllerBase
     {
-
         private readonly ILogger<SummarizationController> _logger;
+        private readonly SummarizationService summarizationServive;
 
-        public SummarizationController(ILogger<SummarizationController> logger)
+        public SummarizationController(ILogger<SummarizationController> logger, SummarizationService summarizationServive)
         {
             _logger = logger;
+            this.summarizationServive = summarizationServive;
         }
 
 
         [HttpPost(Name = "PostSummarizationRequest")]
-        public string Post(string problem, List<string> chatHistory)
+        public async Task<string> Post(string problem, List<string> chatHistory)
         {
-            var summarizationServive = new SummarizationService();
-            string result = summarizationServive.GetResponseAsync(problem, chatHistory.ToList()).Result;
-            Console.WriteLine(result);
+            string result = await summarizationServive.GetResponseAsync(problem, chatHistory.ToList());
+            _logger.LogInformation(result);
             return result;
         }
     }

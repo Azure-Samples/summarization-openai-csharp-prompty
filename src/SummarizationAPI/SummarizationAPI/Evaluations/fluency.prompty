@@ -5,7 +5,7 @@ model:
   api: chat
   configuration:
     type: azure_openai
-    azure_deployment: gpt-35-turbo
+    azure_deployment: chatgpt
     api_version: 2023-07-01-preview
 inputs:
   problem: "I need to open a problem report for part number ABC123. The brake rotor is overheating causing glazing on the pads. We track temperature above 24 degrees Celsius and we are seeing this after three to four laps during runs when the driver is braking late and aggressively into corners. The issue severity is to be prioritized as a 2. This is impacting the front brake assembly EFG234."

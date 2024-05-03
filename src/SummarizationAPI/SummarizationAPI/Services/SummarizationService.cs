@@ -9,37 +9,25 @@ namespace SummarizationAPI.Summarization
 {
     public class SummarizationService
     {
-        private readonly IConfiguration _prompty;
-        private readonly string _oaiEndpoint;
-        private readonly string _oaiKey;
+        private readonly Evaluation _evaluation;
+        private readonly ILogger<SummarizationService> _logger;
+        private readonly OpenAIClient _openaiClient;
+        private readonly string _deploymentName;
 
-        private const string _deploymentName = "gpt-35-turbo";
-        private readonly OpenAIClient _client;
-
-        public SummarizationService()
+        public SummarizationService(ILogger<SummarizationService> logger, OpenAIClient openaiClient, IConfiguration config, Evaluation evaluation)
         {
-            var config = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json").Build();
-
-            _prompty = config.GetSection("prompty");
-
-            _oaiEndpoint = _prompty["azure_endpoint"];
-            _oaiKey = _prompty["api_key"];
-
-            _client = new OpenAIClient(
-                    endpoint: new Uri(_oaiEndpoint),
-                    keyCredential: new AzureKeyCredential(_oaiKey));
+            _logger = logger;
+            _openaiClient = openaiClient;
+            _deploymentName = config["OpenAi:deployment"];
+            _evaluation = evaluation;
         }
 
         public async Task<string> GetResponseAsync(string problem, List<string> chatHistory)
         {
-
-            Console.WriteLine($"Inputs: Problem = {problem}");
-
+            _logger.LogInformation($"Inputs: Problem = {problem}");
 
             var kernel = Kernel.CreateBuilder()
-                          .AddAzureOpenAIChatCompletion(_deploymentName, _client)
+                          .AddAzureOpenAIChatCompletion(_deploymentName, _openaiClient)
                           .Build();
 
             var cwd = Directory.GetCurrentDirectory();
@@ -49,24 +37,24 @@ namespace SummarizationAPI.Summarization
             var kernelFunction = kernel.CreateFunctionFromPrompty(chatPromptyPath);
 #pragma warning restore SKEXP0040 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-            Console.WriteLine("Getting result...");
+            _logger.LogInformation("Getting result...");
             var arguments = new KernelArguments(){
                 { "problem", problem }
             };
 
-            var kernalResult = kernelFunction.InvokeAsync(kernel, arguments).Result;
+            var kernelResult = await kernelFunction.InvokeAsync(kernel, arguments);
             //get string result
 
             // Create score dict with results
             var score = new Dictionary<string, string>();
-            var message = kernalResult.ToString();
+            var message = kernelResult.ToString();
 
-            score["coherence"] = await Evaluation.Evaluate(problem, message, "./Evaluations/coherence.prompty", _deploymentName, _client);
-            score["relevance"] = await Evaluation.Evaluate(problem, message, "./Evaluations/relevance.prompty", _deploymentName, _client);
-            score["fluency"] = await Evaluation.Evaluate(problem, message, "./Evaluations/fluency.prompty", _deploymentName, _client);
+            score["coherence"] = await _evaluation.Evaluate(problem, message, "./Evaluations/coherence.prompty");
+            score["relevance"] = await _evaluation.Evaluate(problem, message, "./Evaluations/relevance.prompty");
+            score["fluency"] = await _evaluation.Evaluate(problem, message, "./Evaluations/fluency.prompty");
 
-            Console.WriteLine($"Result: {kernalResult}");
-            Console.WriteLine($"Score: {string.Join(", ", score)}");
+            _logger.LogInformation($"Result: {kernelResult}");
+            _logger.LogInformation($"Score: {string.Join(", ", score)}");
             // add score to result
 
             var result = JsonConvert.SerializeObject(new { message, score });

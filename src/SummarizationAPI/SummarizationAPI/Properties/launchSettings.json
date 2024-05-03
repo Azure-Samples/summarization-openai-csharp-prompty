@@ -8,7 +8,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5043",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OPENAI__TYPE": "azure",
+        "OPENAI__API_VERSION": "2023-07-01-preview",
+        "OPENAI__ENDPOINT": "https://zxzvurybs56k6-cog.openai.azure.com/",
+        "OPENAI__DEPLOYMENT": "chatgpt",
+        "APPLICATIONINSIGHTS__CONNECTIONSTRING": "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/;ApplicationId=xxxxx"
       }
     }
   }
