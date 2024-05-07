@@ -97,6 +97,20 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
   }
 }
 
+module speechRecognizer 'core/ai/cognitiveservices.bicep' = {
+  name: 'speechRecognizer'
+  scope: resourceGroup
+  params: {
+    name: 'cog-sp-${resourceToken}'
+    kind: 'SpeechServices'
+    location: location
+    tags: tags
+    sku: {
+      name: 'S0'
+    }
+  }
+}
+
 module logAnalyticsWorkspace 'core/monitor/loganalytics.bicep' = {
   name: 'loganalytics'
   scope: resourceGroup
@@ -148,6 +162,8 @@ module aca 'app/aca.bicep' = {
     openAiEndpoint: openAi.outputs.endpoint
     openAiType: openAiType
     openAiApiVersion: openAiApiVersion
+    speechResourceId: speechRecognizer.outputs.id
+    speechRegion: location
     appinsights_Connectionstring: monitoring.outputs.applicationInsightsConnectionString
   }
 }
@@ -170,6 +186,26 @@ module openaiRoleUser 'core/security/role.bicep' = if (!empty(principalId)) {
     principalId: principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd' //Cognitive Services OpenAI User
     principalType: 'User'
+  }
+}
+
+module SpeechRoleUser 'core/security/role.bicep' = {
+  scope: resourceGroup
+  name: 'speech-role-user'
+  params: {
+    principalId: principalId
+    roleDefinitionId: 'f2dc8367-1007-4938-bd23-fe263f013447' //Cognitive Services Speech User
+    principalType: 'User'
+  }
+}
+
+module speechRoleBackend 'core/security/role.bicep' = {
+  scope: resourceGroup
+  name: 'speech-role-backend'
+  params: {
+    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    roleDefinitionId: 'f2dc8367-1007-4938-bd23-fe263f013447' //Cognitive Services Speech User
+    principalType: 'ServicePrincipal'
   }
 }
 
