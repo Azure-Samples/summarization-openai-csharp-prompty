@@ -11,7 +11,9 @@ page_type: sample
 urlFragment: TBD
 ---
 
-# Automated Ticket Processing using Azure AI
+# Ticket Processing using Azure AI
+
+In this sample we recieve issues reported by field and shop floor workers at a company called Contoso Manufacturing, a manufacturing company that makes car batteries. The issues are shared by the workers either live through microphone input or pre-recorded as audio files. We translate the input from speech to text and then use an LLM and Prompty/Promptflow to summarize the issue and return the results in a format we specify.
 
 Samples in JavaScript, .NET, and Java. Learn more at https://aka.ms/azai.
 
@@ -34,16 +36,14 @@ Samples in JavaScript, .NET, and Java. Learn more at https://aka.ms/azai.
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=599293758&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&location=WestUs2)
 [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure-samples/azure-search-openai-demo)
 
-# What is this sample
+# Ticket Processing using Azure AI 
 
-In this sample we recieve issues reported by field and shop floor workers at a company called Contoso Manufacturing, a manufacturing company that makes car batteries. The issues are shared by the workers either live through microphone input or pre-recorded as audio files. We translate the input from speech to text and then use an LLM and Prompty or Promptflow to summarize the issue and return the results in a format we specify.
-
-This sample uses the **[Azure AI Speech Service](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/)** and **[Python SDk](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/quickstarts/setup-platform?pivots=programming-language-python&tabs=macos%2Cubuntu%2Cdotnetcli%2Cdotnet%2Cjre%2Cmaven%2Cnodejs%2Cmac%2Cvscode)** to translate the users speech into text. It leverages **Azure OpenAI** to summarize the text and **Prompty/Prompt Flow** to manage and insert the prompt into our code, and to evaluate prompt/LLM performance.
+This sample uses the **[Azure AI Speech Service](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/)** and **[Semantic Kernel SDK](https://learn.microsoft.com/en-us/semantic-kernel/overview/?tabs=Csharp)** to translate the users speech into text. It leverages **Azure OpenAI** to summarize the text and **Prompty/Semantic Kernel** to manage and insert the prompt into our code, and to evaluate prompt/LLM performance.
 
 By the end of deploying this template you should be able to:
 
- 1. Describe what Azure AI Speech Service Python SDK provides.
- 2. Explain prompt creation with Prompty/Prompt Flow. 
+ 1. Describe what Azure AI Speech Service Semantic Kernel SDK provides.
+ 2. Explain prompt creation with Prompty/Semantic Kernel. 
  3. Build, run, evaluate, and deploy, the summarization app to Azure.
 
 # Features
