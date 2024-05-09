@@ -45,6 +45,12 @@ param openAiDeploymentName string = ''
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
+@description('Whether the deployment is running on Azure DevOps Pipeline')
+param runningOnAdo string = ''
+
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
 
@@ -59,6 +65,9 @@ resource openAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' exi
 }
 
 var prefix = '${environmentName}-${resourceToken}'
+
+// USER ROLES
+var principalType = empty(runningOnGh) && empty(runningOnAdo) ? 'User' : 'ServicePrincipal'
 
 module managedIdentity 'core/security/managed-identity.bicep' = {
   name: 'managed-identity'
@@ -185,7 +194,7 @@ module openaiRoleUser 'core/security/role.bicep' = if (!empty(principalId)) {
   params: {
     principalId: principalId
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd' //Cognitive Services OpenAI User
-    principalType: 'User'
+    principalType: principalType
   }
 }
 
@@ -195,7 +204,7 @@ module SpeechRoleUser 'core/security/role.bicep' = {
   params: {
     principalId: principalId
     roleDefinitionId: 'f2dc8367-1007-4938-bd23-fe263f013447' //Cognitive Services Speech User
-    principalType: 'User'
+    principalType: principalType
   }
 }
 
