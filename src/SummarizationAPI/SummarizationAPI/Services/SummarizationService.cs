@@ -8,10 +8,10 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
     private readonly Kernel _kernel = kernel;
     private readonly ILogger<SummarizationService> _logger = logger;
 
-    private readonly KernelFunction _summarize = kernel.CreateFunctionFromPrompty("summarize.prompty");
-    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "coherence.prompty"));
-    private readonly KernelFunction _relevance = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "relevance.prompty"));
-    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "fluency.prompty"));
+    private readonly KernelFunction _summarize = kernel.CreateFunctionFromPromptyFile("summarize.prompty");
+    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "coherence.prompty"));
+    private readonly KernelFunction _relevance = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "relevance.prompty"));
+    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "fluency.prompty"));
 
     public async Task<string> GetResponseAsync(string problem)
     {
