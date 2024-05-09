@@ -28,12 +28,8 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
             ["fluency"] = await Evaluate(_fluency, problem, summary)
         };
 
-        if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation("Result: {Summary}", summary);
-            _logger.LogInformation("Score: {Score}", string.Join(", ", score));
-        }
-
+        _logger.LogInformation("Summary: {Summary}", summary);
+        _logger.LogInformation("Score: {Score}", score);
         return JsonSerializer.Serialize(new { summary, score });
     }
 
