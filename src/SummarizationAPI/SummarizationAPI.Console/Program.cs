@@ -1,55 +1,93 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Text.Json;
+﻿using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
-using System.Text.Encodings.Web;
-using System.Runtime.InteropServices;
-using System.Text.Json.Serialization;
 
-// This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+// Configure the application
 string speechResourceId = Environment.GetEnvironmentVariable("AZURE_SPEECH__RESOURCE_ID");
 string speechRegion = Environment.GetEnvironmentVariable("AZURE_SPEECH__REGION");
+string backendApi = Environment.GetEnvironmentVariable("BACKEND_API");
+bool useSampleData = false; ; // Change if you want to use sample data instead of recording your voice
 
+if (String.IsNullOrEmpty(speechResourceId) || String.IsNullOrEmpty(speechRegion) || String.IsNullOrEmpty(backendApi))
+{
+    Console.WriteLine("Please set the following environment variables (see the README for details):");
+    Console.WriteLine("AZURE_SPEECH__RESOURCE_ID - Azure Speech Service resource ID");
+    Console.WriteLine("AZURE_SPEECH__REGION - Region for the Azure Speech Service");
+    Console.WriteLine("BACKEND_API - Backend API URL");
+    Console.ReadKey();
+    return;
+}
+
+// Authenticate with the Azure Speech Service using Microsoft Entra
+// Learn more: https://learn.microsoft.com/azure/ai-services/speech-service/how-to-configure-azure-ad-auth?tabs=portal&pivots=programming-language-csharp
 var credentials = new DefaultAzureCredential();
-TokenRequestContext context = new Azure.Core.TokenRequestContext(new string[] { "https://cognitiveservices.azure.com/.default" });
+var context = new TokenRequestContext(new string[] { "https://cognitiveservices.azure.com/.default" });
 var defaultToken = credentials.GetToken(context);
 string aadToken = defaultToken.Token;
-
 string authToken = $"aad#{speechResourceId}#{aadToken}";
 
 var speechConfig = SpeechConfig.FromAuthorizationToken(authToken, speechRegion);
 speechConfig.SpeechRecognitionLanguage = "en-US";
 
-using var audioConfig = AudioConfig.FromDefaultMicrophoneInput();
-using var speechRecognizer = new SpeechRecognizer(speechConfig, audioConfig);
+SpeechRecognitionResult speechRecognitionResult;
 
-Console.WriteLine("Speak into your microphone.");
-var speechRecognitionResult = await speechRecognizer.RecognizeOnceAsync();
-ProcessSpeechRecognitionResult(speechRecognitionResult);
-Console.ReadLine();
+Console.ForegroundColor = ConsoleColor.Black;
+Console.BackgroundColor = ConsoleColor.Yellow;
+if (useSampleData)
+{
+    using var audioConfig = AudioConfig.FromWavFileInput("../../../data/audio-data/issue0.wav");
+    using var speechRecognizer = new SpeechRecognizer(speechConfig, audioConfig);
 
-static async void ProcessSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
+    Console.WriteLine("Converting from speech to text using a sample audio file.");
+
+    speechRecognitionResult = await speechRecognizer.RecognizeOnceAsync();
+} else
+{
+    using var audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+    using var speechRecognizer = new SpeechRecognizer(speechConfig, audioConfig);
+
+    Console.WriteLine("Speak into your microphone to report an issue.");
+    speechRecognitionResult = await speechRecognizer.RecognizeOnceAsync();
+}
+Console.ResetColor();
+
+await ProcessSpeechRecognitionResult(speechRecognitionResult);
+
+// Await on user input to keep the console window open
+Console.WriteLine();
+Console.WriteLine("Press any key to exit...");
+Console.ReadKey();
+
+async Task ProcessSpeechRecognitionResult(SpeechRecognitionResult speechRecognitionResult)
 {
     switch (speechRecognitionResult.Reason)
     {
         case ResultReason.RecognizedSpeech:
             Console.WriteLine($"RECOGNIZED: Text={speechRecognitionResult.Text}");
 
-            string? summary = await SummarizeText(speechRecognitionResult.Text);
-
-            if (summary is null)
+            SummarizationResponse summaryResponse = await SummarizeText(speechRecognitionResult.Text);
+            
+            Console.WriteLine();
+            if (summaryResponse is null)
             {
-                Console.WriteLine("Failed to summarize text - Couldn't not get response from backend service.");
+                Console.WriteLine("No summaryResponse results - did you pass an empty prompt?");
+            }
+            else if (summaryResponse.IsErrorResult)
+            {
+                Console.WriteLine($"Error: {summaryResponse.Summary}");
             }
             else
             {
-                Console.WriteLine($"SUMMARY: {summary}");
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"Here's a summary of the ticket to create:");
+                Console.ResetColor();
+                Console.WriteLine(summaryResponse.Summary);
             }
             break;
         case ResultReason.NoMatch:
@@ -69,10 +107,8 @@ static async void ProcessSpeechRecognitionResult(SpeechRecognitionResult speechR
     }
 }
 
-static async Task<string?> SummarizeText(string text)
+ async Task<SummarizationResponse> SummarizeText(string text)
 {
-    string backendApi = Environment.GetEnvironmentVariable("BACKEND_API");
-
     var httpClient = new HttpClient();
     var httpContent = new StringContent("", Encoding.UTF8, "text/plain");
 
@@ -86,16 +122,22 @@ static async Task<string?> SummarizeText(string text)
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<SummarizationResponse>(jsonResponse);
 
-        return result.Summary;
+        return result;
     }
     else
     {
-        return null;
+        return new()
+        {
+            IsErrorResult = true,
+            Summary = $"Failed to summarize text - HTTP status code: {response.StatusCode}. Reason: {response.ReasonPhrase}"
+        };
     }
 }
 
 class SummarizationResponse
 {
+    public bool IsErrorResult { get; set; } = false;
+
     [JsonPropertyName("summary")]
     public string Summary { get; set; }
 
