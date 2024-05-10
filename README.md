@@ -59,7 +59,8 @@ This project template provides the following features:
 
 
 # Architecture Diagram
-Include a diagram describing the application (DevDiv is working with Designers on this part)
+
+![Architecture Digram](images\architecture-digram-summarization-prompty.png)
 
 # Security
 
