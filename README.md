@@ -50,7 +50,7 @@ By the end of deploying this template you should be able to:
 
 This project template provides the following features:
 
-* A `waiting for speech to text PR` file that converts microphone input or pre-recorded audio to text.
+* A `program.cs` file located at src/SummarizationAPI/SummarizationAPI.Console/Program.cs that converts microphone input or pre-recorded audio to text.
 * Pre-recorded audio files in the `summarization-openai-charp-prompty/data/audio-data` folder to use for testing the app.
 * A `summarize.prompty` file where the prompt is constructed and edited.
 * A `SummarizationAPI.csproj` file with all the packages needed to run this example.
