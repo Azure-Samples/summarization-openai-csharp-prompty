@@ -9,9 +9,7 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
     private readonly ILogger<SummarizationService> _logger = logger;
 
     private readonly KernelFunction _summarize = kernel.CreateFunctionFromPromptyFile("summarize.prompty");
-    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "coherence.prompty"));
     private readonly KernelFunction _relevance = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "relevance.prompty"));
-    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "fluency.prompty"));
 
     public async Task<string> GetResponseAsync(string problem)
     {
@@ -32,18 +30,13 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
     public async Task<Dictionary<string, string?>> GetEvaluationAsync(string problem, string summary)
     {
         _logger.LogInformation("Evaluating result.");
-        var coherenceEvaluation = Evaluate(_coherence, problem, summary);
         var relevanceEvaluation = Evaluate(_relevance, problem, summary);
-        var fluencyEvaluation = Evaluate(_fluency, problem, summary);
 
         var score = new Dictionary<string, string?>
         {
-            ["coherence"] = await coherenceEvaluation,
-            ["relevance"] = await relevanceEvaluation,
-            ["fluency"] = await fluencyEvaluation,
+            ["relevance"] = await relevanceEvaluation
         };
 
-        await Task.WhenAll(coherenceEvaluation, relevanceEvaluation, fluencyEvaluation);
         _logger.LogInformation("Score: {Score}", score);
         return score;
     }

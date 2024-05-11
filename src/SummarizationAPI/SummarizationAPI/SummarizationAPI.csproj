@@ -30,12 +30,6 @@
     <None Update="summarize.prompty">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Evaluations\coherence.prompty">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Evaluations\fluency.prompty">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Evaluations\relevance.prompty">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

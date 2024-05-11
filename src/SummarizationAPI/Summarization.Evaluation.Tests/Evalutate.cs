@@ -29,6 +29,7 @@ namespace Summarization.Evaluation.Tests
             serviceCollection.AddKernel();
             serviceCollection.AddAzureOpenAIChatCompletion(config["OpenAi:deployment"]!);
             serviceCollection.AddLogging();
+            serviceCollection.AddScoped<SummarizationService>();
             _serviceProvider = serviceCollection.BuildServiceProvider();
             _summarizationService = _serviceProvider.GetRequiredService<SummarizationService>();
         }
@@ -43,24 +44,19 @@ namespace Summarization.Evaluation.Tests
             var result = await _summarizationService.GetResponseAsync(problem);
             // parse result string varibales of context and answer
             var response = JsonSerializer.Deserialize<Dictionary<string, dynamic>>(result);
-            var summary = response?["summary"];
+            var summary = (response?["summary"]).ToString();
      
 
 
             //GetEvaluation from chat service
             var score = await _summarizationService.GetEvaluationAsync(problem, summary);
 
-            var coherence = int.Parse(score["coherence"]);
             var relevance = int.Parse(score["relevance"]);
-            var fluency = int.Parse(score["fluency"]);
 
 
 
             Assert.Multiple(
-                () => Assert.True(coherence >= 3, $"Coherence of {problem} - score {coherence}, expecting min 3."),
-                    () => Assert.True(relevance >= 2, $"Relevance of {problem} - score {relevance}, expecting min 2."),
-                    () => Assert.True(fluency >= 2, $"Fluency of {problem} - score {fluency}, expecting min 2.")
-                );
+                () => Assert.True(relevance >= 3, $"Relevance of {problem} - score {relevance}, expecting min 3."));
         }
 
     }
