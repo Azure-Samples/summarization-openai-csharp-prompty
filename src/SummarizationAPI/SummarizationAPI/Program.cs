@@ -2,7 +2,7 @@ using Azure.AI.OpenAI;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.SemanticKernel;
-using SummarizationAPI.Summarization;
+using SummarizationAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using System.Text.Json;
 
-namespace SummarizationAPI.Summarization;
+namespace SummarizationAPI;
 
 public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationService> logger)
 {
@@ -21,21 +21,33 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
             { "problem", problem }
         });
 
-        var score = new Dictionary<string, string?>
-        {
-            ["coherence"] = await Evaluate(_coherence, problem, summary),
-            ["relevance"] = await Evaluate(_relevance, problem, summary),
-            ["fluency"] = await Evaluate(_fluency, problem, summary)
-        };
-
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Result: {Summary}", summary);
-            _logger.LogInformation("Score: {Score}", string.Join(", ", score));
         }
 
-        return JsonSerializer.Serialize(new { summary, score });
+        return JsonSerializer.Serialize(new { summary });
     }
+    // Evaluate the answer using the specified function.
+    public async Task<Dictionary<string, string?>> GetEvaluationAsync(string problem, string summary)
+    {
+        _logger.LogInformation("Evaluating result.");
+        var coherenceEvaluation = Evaluate(_coherence, problem, summary);
+        var relevanceEvaluation = Evaluate(_relevance, problem, summary);
+        var fluencyEvaluation = Evaluate(_fluency, problem, summary);
+
+        var score = new Dictionary<string, string?>
+        {
+            ["coherence"] = await coherenceEvaluation,
+            ["relevance"] = await relevanceEvaluation,
+            ["fluency"] = await fluencyEvaluation,
+        };
+
+        await Task.WhenAll(coherenceEvaluation, relevanceEvaluation, fluencyEvaluation);
+        _logger.LogInformation("Score: {Score}", score);
+        return score;
+    }
+
 
     private Task<string?> Evaluate(KernelFunction func, string problem, string? summary)
     {
