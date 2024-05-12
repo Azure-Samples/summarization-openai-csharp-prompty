@@ -19,11 +19,6 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
             { "problem", problem }
         });
 
-        if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation("Result: {Summary}", summary);
-        }
-
         return JsonSerializer.Serialize(new { summary });
     }
     // Evaluate the answer using the specified function.
@@ -36,7 +31,6 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
         {
             ["relevance"] = await relevanceEvaluation
         };
-
         _logger.LogInformation("Score: {Score}", score);
         return score;
     }
