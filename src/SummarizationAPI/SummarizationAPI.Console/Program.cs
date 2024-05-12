@@ -6,19 +6,25 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
+using Microsoft.Extensions.Configuration;
 
-// Configure the application
-string speechResourceId = Environment.GetEnvironmentVariable("AZURE_SPEECH__RESOURCE_ID");
-string speechRegion = Environment.GetEnvironmentVariable("AZURE_SPEECH__REGION");
-string backendApi = Environment.GetEnvironmentVariable("BACKEND_API");
-bool useSampleData = false; ; // Change if you want to use sample data instead of recording your voice
+bool useSampleData = true; ; // Change if you want to use sample data instead of recording your voice
+
+// Load configuration from appsettings.json from SummarizationAPI project
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+string speechResourceId = config["AzureSpeech:ResourceId"];
+string speechRegion = config["AzureSpeech:Region"];
+string backendApi = config["BackendApi"];
 
 if (String.IsNullOrEmpty(speechResourceId) || String.IsNullOrEmpty(speechRegion) || String.IsNullOrEmpty(backendApi))
 {
-    Console.WriteLine("Please set the following environment variables (see the README for details):");
-    Console.WriteLine("AZURE_SPEECH__RESOURCE_ID - Azure Speech Service resource ID");
-    Console.WriteLine("AZURE_SPEECH__REGION - Region for the Azure Speech Service");
-    Console.WriteLine("BACKEND_API - Backend API URL");
+    Console.WriteLine("Please set the following values in the appsettings.json file:");
+    Console.WriteLine("AzureSpeech:ResourceId - Azure Speech Service resource ID");
+    Console.WriteLine("AzureSpeech:Region - Region for the Azure Speech Service");
+    Console.WriteLine("BackendApi - Backend API URL");
     Console.ReadKey();
     return;
 }
