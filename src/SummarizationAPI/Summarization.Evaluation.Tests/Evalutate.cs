@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Summarization.Evaluation.Tests
 {
-    public class Evalutate
+    public class Evaluate
     {
         //create chatService and serviceProvider
         private readonly SummarizationService _summarizationService;
