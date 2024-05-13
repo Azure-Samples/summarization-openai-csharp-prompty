@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using System.Text.Json;
 
-namespace SummarizationAPI.Summarization;
+namespace SummarizationAPI;
 
 public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationService> logger)
 {
@@ -9,9 +9,7 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
     private readonly ILogger<SummarizationService> _logger = logger;
 
     private readonly KernelFunction _summarize = kernel.CreateFunctionFromPromptyFile("summarize.prompty");
-    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "coherence.prompty"));
     private readonly KernelFunction _relevance = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "relevance.prompty"));
-    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "fluency.prompty"));
 
     public async Task<string> GetResponseAsync(string problem)
     {
@@ -21,17 +19,23 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
             { "problem", problem }
         });
 
+        return JsonSerializer.Serialize(new { summary });
+    }
+
+    // Evaluate the answer using the specified function.
+    public async Task<Dictionary<string, string?>> GetEvaluationAsync(string problem, string summary)
+    {
+        _logger.LogInformation("Evaluating result.");
+        var relevanceEvaluation = Evaluate(_relevance, problem, summary);
+
         var score = new Dictionary<string, string?>
         {
-            ["coherence"] = await Evaluate(_coherence, problem, summary),
-            ["relevance"] = await Evaluate(_relevance, problem, summary),
-            ["fluency"] = await Evaluate(_fluency, problem, summary)
+            ["relevance"] = await relevanceEvaluation
         };
-
-        _logger.LogInformation("Summary: {Summary}", summary);
         _logger.LogInformation("Score: {Score}", score);
-        return JsonSerializer.Serialize(new { summary, score });
+        return score;
     }
+
 
     private Task<string?> Evaluate(KernelFunction func, string problem, string? summary)
     {
