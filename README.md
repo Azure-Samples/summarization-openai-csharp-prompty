@@ -60,7 +60,7 @@ This project template provides the following features:
 
 # Architecture Diagram
 
-![Architecture Digram](/images/architecture-diagram-summarization-prompty.png)
+![Architecture Digram](images/architecture-diagram-summarization-prompty.png)
 
 # Security
 
