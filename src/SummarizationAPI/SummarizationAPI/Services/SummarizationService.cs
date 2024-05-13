@@ -21,6 +21,7 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
 
         return JsonSerializer.Serialize(new { summary });
     }
+
     // Evaluate the answer using the specified function.
     public async Task<Dictionary<string, string?>> GetEvaluationAsync(string problem, string summary)
     {
