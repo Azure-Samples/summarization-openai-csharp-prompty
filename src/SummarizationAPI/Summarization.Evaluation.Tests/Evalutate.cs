@@ -15,7 +15,7 @@ namespace Summarization.Evaluation.Tests
         private readonly SummarizationService _summarizationService;
         private readonly ServiceProvider _serviceProvider;
 
-        public Evalutate()
+        public Evaluate()
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
