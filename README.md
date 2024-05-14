@@ -61,7 +61,7 @@ The project comes with:
 The sample is also a signature application for demonstrating the new capabilities of the Azure AI platform. Expect regular updates to showcase cutting-edge features and best practices for generative AI development. 
 
 ## Architecture Diagram
-![Architecture Diagram](images\architecture-diagram-summarization-prompty.png)
+![Architecture Diagram](images/architecture-diagram-summarization-prompty.png)
 
 # Getting Started
 
