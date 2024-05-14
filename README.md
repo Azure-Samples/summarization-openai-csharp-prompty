@@ -164,7 +164,7 @@ If all of the above are correctly installed you can set up your local developer 
    ```bash
    cd 
    code .
-   cd ./src/summarizationapp
+   cd ./src/SummarizationAPI
    ```
 1. Install the [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 1. Install the newest version of [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4)
@@ -270,7 +270,7 @@ The project now needs to have access to Azure, to do this, go to ``.\src\Summari
 
 ## 3. Running Locally
 
-First, you will need to navegate in the console to our folder in ContosoChat, use the following  ``cd .src\SummarizationAPI\``.
+First, you will need to navegate in the console to our folder in Summarization, use the following  ``cd .src\SummarizationAPI\``.
 
 After this, we need to restore our dotNet packages to build our solution, we can use ``dotnet restore``. To build our ``.dll`` from solution, use ``dotnet build``, it will report two dlls being created, the test and the main one.
 
