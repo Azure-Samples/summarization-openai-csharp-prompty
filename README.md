@@ -72,7 +72,7 @@ The sample is also a signature application for demonstrating the new capabilitie
 **IMPORTANT:** In order to deploy and run this example, you'll need:
 
 * **Azure account**. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/cognitive-search/) and you'll get some free Azure credits to get started. See [guide to deploying with the free trial](docs/deploy_lowcost.md).
-* **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply). If your access request to Azure OpenAI service doesn't match the [acceptance criteria](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access?context=%2Fazure%2Fcognitive-services%2Fopenai%2Fcontext%2Fcontext), you can use [OpenAI public API](https://platform.openai.com/docs/api-reference/introduction) instead. Learn [how to switch to an OpenAI instance](docs/deploy_existing.md#openaicom-openai).
+* **Azure subscription with access enabled for the Azure OpenAI service**. You can request access with [this form](https://aka.ms/oaiapply).
     - Ability to deploy these models - `gpt-35-turbo`, `gpt-4`, `text-embeddings-ada-002`
     - We recommend using Sweden Central or East US 2
 * **Azure account permissions**:
@@ -164,7 +164,7 @@ If all of the above are correctly installed you can set up your local developer 
    ```bash
    cd 
    code .
-   cd ./src/summarizationapp
+   cd ./src/SummarizationAPI
    ```
 1. Install the [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 1. Install the newest version of [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4)
@@ -270,7 +270,7 @@ The project now needs to have access to Azure, to do this, go to ``.\src\Summari
 
 ## 3. Running Locally
 
-First, you will need to navegate in the console to our folder in ContosoChat, use the following  ``cd .src\SummarizationAPI\``.
+First, you will need to navegate in the console to our folder in Summarization, use the following  ``cd .src\SummarizationAPI\``.
 
 After this, we need to restore our dotNet packages to build our solution, we can use ``dotnet restore``. To build our ``.dll`` from solution, use ``dotnet build``, it will report two dlls being created, the test and the main one.
 
