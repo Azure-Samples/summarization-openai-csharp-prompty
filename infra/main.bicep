@@ -151,6 +151,19 @@ module aca 'app/aca.bicep' = {
     appinsights_Connectionstring: monitoring.outputs.applicationInsightsConnectionString
   }
 }
+module speechRecognizer 'core/ai/cognitiveservices.bicep' = {
+  name: 'speechRecognizer'
+  scope: resourceGroup
+  params: {
+    name: 'cog-sp-${resourceToken}'
+    kind: 'SpeechServices'
+    location: location
+    tags: tags
+    sku: {
+      name: 'S0'
+    }
+  }
+}
 
 module appinsightsAccountRole 'core/security/role.bicep' = {
   scope: resourceGroup
@@ -158,6 +171,16 @@ module appinsightsAccountRole 'core/security/role.bicep' = {
   params: {
     principalId: managedIdentity.outputs.managedIdentityPrincipalId
     roleDefinitionId: '3913510d-42f4-4e42-8a64-420c390055eb' // Monitoring Metrics Publisher
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module speechRoleBackend 'core/security/role.bicep' = {
+  scope: resourceGroup
+  name: 'speech-role-backend'
+  params: {
+    principalId: managedIdentity.outputs.managedIdentityPrincipalId
+    roleDefinitionId: 'f2dc8367-1007-4938-bd23-fe263f013447' //Cognitive Services Speech User
     principalType: 'ServicePrincipal'
   }
 }
