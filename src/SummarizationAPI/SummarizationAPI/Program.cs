@@ -16,12 +16,12 @@ builder.Services.AddSingleton(_ => new OpenAIClient(new Uri(builder.Configuratio
 builder.Services.AddKernel().AddAzureOpenAIChatCompletion(builder.Configuration["OpenAi:deployment"]!);
 builder.Services.AddScoped<SummarizationService>();
 
-//// Application Insights
-//builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
-//{
-//    options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
-//    options.Credential = new DefaultAzureCredential();
-//});
+// Application Insights
+builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
+{
+    options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+    options.Credential = new DefaultAzureCredential();
+});
 
 var app = builder.Build();
 
