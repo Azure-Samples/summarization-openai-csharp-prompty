@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SummarizationAPI.Summarization;
+using SummarizationAPI;
 
 namespace SummarizationAPI.Controllers;
 

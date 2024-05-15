@@ -12,6 +12,8 @@ param openAiEndpoint string
 param openAiApiVersion string
 param openAiType string
 param appinsights_Connectionstring string
+param speechResourceId string
+param speechRegion string
 
 
 module app '../core/host/container-app-upsert.bicep' = {
@@ -48,6 +50,14 @@ module app '../core/host/container-app-upsert.bicep' = {
       {
         name: 'APPLICATIONINSIGHTS__CONNECTIONSTRING'
         value: appinsights_Connectionstring
+      }
+      {
+        name: 'AZURE_SPEECH__RESOURCE_ID'
+        value: speechResourceId
+      }
+      {
+        name: 'AZURE_SPEECH__REGION'
+        value: speechRegion
       }
 
     ]
