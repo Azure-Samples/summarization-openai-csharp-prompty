@@ -54,7 +54,6 @@ By the end of deploying this template you should be able to:
 The project comes with:
 
 - Sample **model configurations**, **evaluation prompts**, and **Prompty** assets (to simplify prompt creation & iteration) for a RAG-based copilot application
-- Sample **product and customer data** for retail application scenario
 - Sample **application code** for copilot chat and evaluation functions
 - Sample **azd-template configuration** for managing application on Azure
 
