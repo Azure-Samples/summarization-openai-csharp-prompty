@@ -1,17 +1,15 @@
 ﻿using Microsoft.SemanticKernel;
 using System.Text.Json;
 
-namespace SummarizationAPI.Summarization;
+namespace SummarizationAPI;
 
 public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationService> logger)
 {
     private readonly Kernel _kernel = kernel;
     private readonly ILogger<SummarizationService> _logger = logger;
 
-    private readonly KernelFunction _summarize = kernel.CreateFunctionFromPrompty("summarize.prompty");
-    private readonly KernelFunction _coherence = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "coherence.prompty"));
-    private readonly KernelFunction _relevance = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "relevance.prompty"));
-    private readonly KernelFunction _fluency = kernel.CreateFunctionFromPrompty(Path.Combine("Evaluations", "fluency.prompty"));
+    private readonly KernelFunction _summarize = kernel.CreateFunctionFromPromptyFile("summarize.prompty");
+    private readonly KernelFunction _relevance = kernel.CreateFunctionFromPromptyFile(Path.Combine("Evaluations", "relevance.prompty"));
 
     public async Task<string> GetResponseAsync(string problem)
     {
@@ -21,21 +19,23 @@ public sealed class SummarizationService(Kernel kernel, ILogger<SummarizationSer
             { "problem", problem }
         });
 
+        return JsonSerializer.Serialize(new { summary });
+    }
+
+    // Evaluate the answer using the specified function.
+    public async Task<Dictionary<string, string?>> GetEvaluationAsync(string problem, string summary)
+    {
+        _logger.LogInformation("Evaluating result.");
+        var relevanceEvaluation = Evaluate(_relevance, problem, summary);
+
         var score = new Dictionary<string, string?>
         {
-            ["coherence"] = await Evaluate(_coherence, problem, summary),
-            ["relevance"] = await Evaluate(_relevance, problem, summary),
-            ["fluency"] = await Evaluate(_fluency, problem, summary)
+            ["relevance"] = await relevanceEvaluation
         };
-
-        if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation("Result: {Summary}", summary);
-            _logger.LogInformation("Score: {Score}", string.Join(", ", score));
-        }
-
-        return JsonSerializer.Serialize(new { summary, score });
+        _logger.LogInformation("Score: {Score}", score);
+        return score;
     }
+
 
     private Task<string?> Evaluate(KernelFunction func, string problem, string? summary)
     {
