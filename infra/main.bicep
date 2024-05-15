@@ -52,6 +52,7 @@ param runningOnGh string = ''
 param runningOnAdo string = ''
 
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+var speechSubdomain  = 'summarization-cog-service${resourceToken}'
 var tags = { 'azd-env-name': environmentName }
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -114,6 +115,7 @@ module speechRecognizer 'core/ai/cognitiveservices.bicep' = {
     kind: 'SpeechServices'
     location: location
     tags: tags
+    customSubDomainName: speechSubdomain
     sku: {
       name: 'S0'
     }
