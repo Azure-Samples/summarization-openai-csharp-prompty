@@ -26,9 +26,6 @@ urlFragment:  summarization-openai-csharp-prompty
 - [Architecture Diagram](#architecture-diagram)
 - [Security](#security)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Quickstart](#quickstart)
-  - [Local Development](#local-development)
 - [Costs](#costs)  
 - [Security Guidelines](#security-guidelines)
 - [Resources](#resources)
@@ -88,10 +85,7 @@ The sample is also a signature application for demonstrating the new capabilitie
     - Linux: `curl -fsSL https://aka.ms/install-azd.sh | bash`
     - MacOS: `brew tap azure/azd && brew install azd`
 
-
-## Deploy
-
-### Step 1: Development Environment
+## Step 1: Development Environment
 
 The repository is instrumented with a devcontainer.json configuration that can provide you with a pre-built environment that can be launched locally, or in the cloud. You can also elect to do a manual environment setup locally, if desired. Here are the three options in increasing order of complexity and effort on your part. 
 
@@ -180,7 +174,7 @@ If all of the above are correctly installed you can set up your local developer 
 We setup our development ennvironment in the previous step. In this step, we'll **provision Azure resources** for our project, ready to use for developing our LLM Application.
 
 
-### 2.1 Authenticate with Azure
+###  Authenticate with Azure
 
 Start by connecting your Visual Studio Code environment to your Azure account:
 
@@ -200,17 +194,17 @@ In either case, verify that the console shows a message indicating a successful 
 
 **Congratulations! Your VS Code session is now connected to your Azure subscription!**
 
-### 2.2 Provision with Azure Developer CLI
+### Provision with Azure Developer CLI
 
 For this project, we need to provision multiple Azure resources in a specific order. **Before**, we achieved this by running the `provision.sh` script. **Now**, we'll use the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview) (or `azd`) instead, and follow the steps below.
 Visit the [azd reference](https://learn.microsoft.com/azure/developer/azure-developer-cli/reference) for more details on tool syntax, commands and options.
 
-#### 2.2.1 Install `azd`
+#### Install `azd`
 - If you setup your development environment manually, follow [these instructions](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to install `azd` for your local device OS.
 - If you used a pre-built dev container environment (e.g., GitHub Codespaces or Docker Desktop) the tool is pre-installed for you.
 - Verify that the tool is installed by typing ```azd version``` in a terminal.
 
-#### 2.2.2 Authenticate with Azure
+#### Authenticate with Azure
 - Start the authentication flow from a terminal:
     ```bash
     azd auth login
@@ -221,7 +215,7 @@ Visit the [azd reference](https://learn.microsoft.com/azure/developer/azure-deve
     Then press enter and continue to log in from your browser...
     ```
 
-#### 2.2.3 Provision and Deploy 
+#### Provision and Deploy 
 
 - Run this unified command to provision all resources. This will take a non-trivial amount of time to complete.
     ```bash
@@ -229,20 +223,9 @@ Visit the [azd reference](https://learn.microsoft.com/azure/developer/azure-deve
     ```
 - You will be prompted for the subscription you want you use and the region. The bicep parameters declare two location fields: the first one is the primary location for all resources, the second is a location field specifically for where the OpenAI resource should be created.
 
-- On completion, it automatically invokes a`postprovision.sh` script that will attempt to log you into Azure. You may see something like this. Just follow the provided instructions to complete the authentication flow.
-    ```bash
-    No Azure user signed in. Please login.
-    ```
-- Once logged in, the script will do the following for you:
-    - Download `config.json` to the local device
-    - Populate `.env` with required environment variables
-    - Populate your data (in Azure AI Search, Azure CosmosDB)
-    - Create relevant Connections (for prompt flow)
-    - Upload your prompt flow to Azure (for deployment)
-
 That's it! You should now be ready to continue the process as before. Note that this is a new process so there may be some issues to iron out. Start by completing the verification steps below and taking any troubleshooting actions identified.
 
-#### 2.2.4 Verify Provisioning
+#### Verify Provisioning
 
 The script should **set up a dedicated resource group** with the following resources:
 
@@ -251,21 +234,9 @@ The script should **set up a dedicated resource group** with the following resou
  - **Azure Open AI Service** resource
  - **Azure Speech to Text** resource
 
-### 2.3 Verify `config.json` setup
+### Add endpoints to the .NET Application
 
-The script should automatically create a `config.json` in your root directory, with the relevant Azure subscription, resource group, and AI workspace properties defined. _These will be made use of by the Azure AI SDK for relevant API interactions with the Azure AI platform later_.
-
-If the config.json file is not created, simply download it from your Azure portal by visiting the _Azure AI project_ resource created, and looking at its Overview page.
-
-### 2.4 Verify `.env` setup
-
-The default sample has an `.env.sample` file that shows the relevant environment variables that need to be configured in this project. The script should create a `.env` file that has these same variables _but populated with the right values_ for your Azure resources.
-
-If the file is not created, simply copy over `.env.sample` to `.env` - then populate those values manually from the respective Azure resource pages using the Azure Portal (for Azure CosmosDB and Azure AI Search) and the Azure AI Studio (for the Azure OpenAI values)
-
-### 2.5 Add endpoints to the .NET Application
-
-The project now needs to have access to Azure, to do this, go to ``.\src\SummarizationAPI\SummarizationAPI\appsettings.json`` and change the following variables. Use the ``\.azure\<env-name>\.env`` for your endpoints.
+The project now needs to have access to Azure, to do this, go to ``.\src\SummarizationAPI\SummarizationAPI\appsettings.json`` and change the following variables. 
 
 ## 3. Running Locally
 
@@ -277,35 +248,15 @@ After this, we need to restore our dotNet packages to build our solution, we can
 
 To the Swagger endpoint, use the application on ``http://localhost:5282/swagger/``
 
+## 4. Clean up
 
-## 4. Deploy with GitHub Actions
+To clean up all the resources created by this sample:
 
-### 4.1. Create Connection to Azure in GitHub
-- Login to [Azure Shell](https://shell.azure.com/)
-- Follow the instructions to [create a service principal here](hhttps://github.com/microsoft/llmops-promptflow-template/blob/main/docs/github_workflows_how_to_setup.md#create-azure-service-principal)
-- Follow the [instructions in steps 1 - 8  here](https://github.com/microsoft/llmops-promptflow-template/blob/main/docs/github_workflows_how_to_setup.md#steps) to add create and add the user-assigned managed identity to the subscription and workspace.
+1. Run `azd down`
+2. When asked if you are sure you want to continue, enter `y`
+3. When asked if you want to permanently delete the resources, enter `y`
 
-- Assign `Data Science Role` and the `Azure Machine Learning Workspace Connection Secrets Reader` to the service principal. Complete this step in the portal under the IAM.
-- Setup authentication with Github [here](https://github.com/microsoft/llmops-promptflow-template/blob/main/docs/github_workflows_how_to_setup.md#set-up-authentication-with-azure-and-github)
-
-```bash
-{
-  "clientId": <GUID>,
-  "clientSecret": <GUID>,
-  "subscriptionId": <GUID>,
-  "tenantId": <GUID>
-}
-```
-- Add `SUBSCRIPTION` (this is the subscription) , `GROUP` (this is the resource group name), `WORKSPACE` (this is the project name), and `KEY_VAULT_NAME` to GitHub.
-
-### 4.2. Create a custom environment for endpoint
-- Follow the instructions to create a custom env with the packages needed [here](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-environments-in-studio?view=azureml-api-2#create-an-environment)
-  - Select the `upload existing docker` option 
-  - Upload from the folder `runtime\docker`
-
-- Update the deployment.yml image to the newly created environemnt. You can find the name under `Azure container registry` in the environment details page.
-
-
+The resource group and all the resources will be deleted.
 
 ## Costs
 You can estimate the cost of this project's architecture with [Azure's pricing calculator](https://azure.microsoft.com/pricing/calculator/)
