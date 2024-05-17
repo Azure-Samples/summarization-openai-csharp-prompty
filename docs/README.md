@@ -1,3 +1,20 @@
+---
+name: Ticket Processing with Azure AI
+description: Process tickets automatically with Azure AI LLMs and Speech Service.
+languages:
+- DotNet
+- bicep
+- azdeveloper
+- Prompty
+products:
+- azure-openai
+- azure-cognitive-search
+- azure-app-service
+- azure
+page_type: sample
+urlFragment:  summarization-openai-csharp-prompty
+---
+
 # Automated Ticket Processing using Azure AI
 
 ---
@@ -40,7 +57,7 @@ The project comes with:
 The sample is also a signature application for demonstrating the new capabilities of the Azure AI platform. Expect regular updates to showcase cutting-edge features and best practices for generative AI development. 
 
 ## Architecture Diagram
-![Architecture Diagram](images/architecture-diagram-summarization-prompty.png)
+![Architecture Diagram](../images/architecture-diagram-summarization-prompty.png)
 
 # Getting Started
 
