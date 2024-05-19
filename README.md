@@ -138,7 +138,7 @@ Each project in this sample can be run independently, to test the full end-to-en
 
 ### Running the Console project
 
-> Note: At this timne it can only be run on a local machine due to limitations with the Speech Services SDK. If you're using the sample in GitHub Codespaces or a Dev Container, you can still test the Summarization API directly or use the test project.
+> Note: At this time it can only be run on a local machine due to limitations with the Speech Services SDK. If you're using the sample in GitHub Codespaces or a Dev Container, you can still test the Summarization API directly or use the test project.
 
 Before running the project, you'll need to setup the configuration settings to reference the resources that were deployed to Azure. To do this, open the ``src\SummarizationAPI\SummarizationAPI.Console\appsettings.json`` file in your project. Copy values from the ``\.azure\<env-name>\.env`` file, generated during Azure resource provisioning, into the settings in appsettings.json using the following table as a guide.
 
@@ -159,7 +159,7 @@ By default, the console application will use a sample audio file to convert from
 
 ### Running the Evaluation Tests project
 
-The `Summarization.Evaluation.Tests` project includes a sample unit test that can be used to evaluate the quality of your results, using a [groundedness score](https://learn.microsoft.com/dotnet/ai/tutorials/llm-eval#5---review-the-evaluation-results).
+The `Summarization.Evaluation.Tests` project includes a sample unit test that can be used to evaluate the quality of your results.
 
 To run the tests, you'll need to setup the configuration settings to reference the resources that were deployed to Azure. Open the ``src\SummarizationAPI\Summarization.Evaluation.Tests\appsettings.json`` file in your project. Copy values from the ``\.azure\<env-name>\.env`` file, generated during Azure resource provisioning, into the settings in appsettings.json using the following table as a guide.
 
@@ -223,6 +223,16 @@ The prompty file contains the following:
 * Sample Section: a sample of the inputs to be provided
 * The prompt: in this sample we add a system message as the prompt with context and details about the format. We also add in a user message at the bottom of the file, which consists of the reported issue in text format from our user.
 
+### Cleaning up
+
+To clean up all the resources created by this sample:
+
+1. Run `azd down`
+2. When asked if you are sure you want to continue, enter `y`
+3. When asked if you want to permanently delete the resources, enter `y`
+
+The resource group and all the resources will be deleted.
+
 ## Guidance
 
 ### Region Availability
@@ -248,16 +258,6 @@ Additionally, we have added a [GitHub Action tool](https://github.com/microsoft/
 ### Troubleshooting
 
 Have questions or issues to report? Please [open a new issue](https://github.com/Azure-Samples/summarization-openai-csharp-prompty/issues) after first verifying that the same question or issue has not already been reported. In the latter case, please add any additional comments you may have, to the existing issue.
-
-### Cleaning up
-
-To clean up all the resources created by this sample:
-
-1. Run `azd down`
-2. When asked if you are sure you want to continue, enter `y`
-3. When asked if you want to permanently delete the resources, enter `y`
-
-The resource group and all the resources will be deleted.
 
 ### Resources
 
