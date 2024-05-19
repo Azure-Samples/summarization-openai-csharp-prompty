@@ -121,7 +121,7 @@ async Task ProcessSpeechRecognitionResult(SpeechRecognitionResult speechRecognit
     // Encode the text parameter for inclusion in a URL request
     var queryParam = WebUtility.UrlEncode(text);
 
-    var response = await httpClient.PostAsync($"{backendApi}?problem={queryParam}", httpContent);
+    var response = await httpClient.PostAsync($"{backendApi}/Summarization?problem={queryParam}", httpContent);
     
     if (response.IsSuccessStatusCode)
     {

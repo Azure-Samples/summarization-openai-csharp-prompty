@@ -240,3 +240,6 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registry
 output AZURE_CONTAINER_REGISTRY_NAME string = containerApps.outputs.registryName
 
 output APPINSIGHTS_CONNECTIONSTRING string = monitoring.outputs.applicationInsightsConnectionString
+
+output AZURE_SPEECH_RESOURCE_ID string = speechRecognizer.outputs.id
+output AZURE_SPEECH_REGION string = location
