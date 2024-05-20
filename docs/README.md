@@ -2,7 +2,7 @@
 name: Ticket Processing with Azure AI
 description: Process tickets automatically with Azure AI LLMs and Speech Service.
 languages:
-- DotNet
+- csharp
 - bicep
 - azdeveloper
 products:
