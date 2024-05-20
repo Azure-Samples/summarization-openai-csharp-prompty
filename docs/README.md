@@ -55,7 +55,7 @@ This project template provides the following features:
 
 ### Architecture Diagram
 
-![Architecture Diagram](images/architecture-diagram-summarization-prompty.png)
+![Architecture Diagram](../images/architecture-diagram-summarization-prompty.png)
 
 ## Getting Started
 
