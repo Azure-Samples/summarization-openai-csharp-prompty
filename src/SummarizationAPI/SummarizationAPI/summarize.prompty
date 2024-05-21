@@ -7,8 +7,6 @@ model:
   api: chat
   configuration:
     type: azure_openai
-    azure_deployment: chatgpt
-    api_version: 2023-07-01-preview
 sample: 
   problem: >
     "This is Sandra, I am a test specialist assigned to ensure the carbon emissions meet specifications on the 2024 
