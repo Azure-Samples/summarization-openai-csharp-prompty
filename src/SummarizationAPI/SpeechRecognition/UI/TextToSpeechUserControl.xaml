@@ -17,7 +17,11 @@
             </Grid.RowDefinitions>
 
             <!--<TextBlock Grid.Row="0" Text="Text to speech convrter" />-->
-            <TextBlock Text="Generated adio" Visibility="{Binding Visibility}" />
+            <TextBlock
+                Margin="0,10,0,0"
+                FontWeight="Bold"
+                Text="Generated adio. Click to play."
+                Visibility="{Binding Visibility}" />
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <DockPanel>
                     <ItemsControl

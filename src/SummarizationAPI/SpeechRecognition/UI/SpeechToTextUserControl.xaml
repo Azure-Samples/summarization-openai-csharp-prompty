@@ -31,10 +31,11 @@
                 <Setter Property="FontSize" Value="16" />
             </Style>
             <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Margin" Value="5,0,0,10" />
+                <Setter Property="Margin" Value="5,0,0,40" />
             </Style>
 
             <Style TargetType="{x:Type Label}">
+                <Setter Property="Margin" Value="0,0,0,40" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
