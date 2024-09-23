@@ -1,0 +1,188 @@
+﻿<UserControl
+    x:Class="SpeechRecognition.UI.SpeechToTextUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:convters="clr-namespace:SpeechRecognition"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SpeechRecognition.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries />
+            <convters:BooleanInverter x:Key="BooleanInverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <convters:ParametricBooleanToVisibilityConverter x:Key="ParametricBooleanToVisibilityConverter" />
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="Margin" Value="6" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="GroupName" Value="SpeechSource" />
+            </Style>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Width" Value="70" />
+                <Setter Property="Height" Value="40" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="5,25,0,0" />
+            </Style>
+
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="Margin" Value="5,20,0,20" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border>
+
+        <Grid Margin="5,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Button
+                Name="Clean"
+                Width="40"
+                Margin="0,5,10,5"
+                HorizontalAlignment="Right"
+                BorderThickness="0"
+                Click="Clean_Click"
+                Content="Clean"
+                DockPanel.Dock="Right"
+                IsEnabled="{Binding IsSpeechRecognizedToText}" />
+
+            <ScrollViewer Grid.Row="1">
+                <DockPanel>
+                    <ItemsControl
+                        DockPanel.Dock="Top"
+                        IsTabStop="False"
+                        ItemsSource="{Binding RecognizedSpeechToText}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Width="auto"
+                                    Margin="4"
+                                    Background="LightGray">
+                                    <StackPanel>
+
+                                        <Grid Visibility="{Binding IsErrorResult, Converter={StaticResource ParametricBooleanToVisibilityConverter}, ConverterParameter=False}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Label Content="Speech text" />
+                                            <TextBlock
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Text="{Binding SpeechText}"
+                                                TextWrapping="Wrap" />
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Content="Summary" />
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Text="{Binding Summary}"
+                                                TextWrapping="Wrap" />
+                                            <Label
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                Content="Score" />
+                                            <TextBlock
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Text="{Binding SpeechSummaryEvaluationScore}"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+                                        <Grid Height="auto" Visibility="{Binding IsErrorResult, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Label Content="Error" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Left"
+                                                Text="{Binding ErrorMessage}"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel
+                        VerticalAlignment="Bottom"
+                        DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        Visibility="{Binding IsServiceStarted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Label
+                            Margin="0"
+                            Content="Working on it"
+                            FontWeight="Bold" />
+                        <Label Margin="0" Content="{Binding ServiceInProgressDots, Mode=TwoWay}" />
+                    </StackPanel>
+                </DockPanel>
+            </ScrollViewer>
+            <DockPanel
+                Grid.Row="2"
+                Margin="0,0,0,5"
+                VerticalAlignment="Bottom">
+                <StackPanel
+                    Margin="5,10,5,0"
+                    HorizontalAlignment="Right"
+                    DockPanel.Dock="Right">
+                    <Button
+                        x:Name="StartButton"
+                        Click=" StartButton_ClickAsync"
+                        Content="Speak"
+                        ToolTip="Click and start to speak to your microphone"
+                        Visibility="{Binding UseMicrophone, Mode=TwoWay, Converter={StaticResource ParametricBooleanToVisibilityConverter}, ConverterParameter=true}" />
+                    <Button
+                        x:Name="AttachFile"
+                        Click="AttachFile_ClickAsync"
+                        Content="Browse"
+                        ToolTip="Attach speech from file"
+                        Visibility="{Binding UseMicrophone, Mode=TwoWay, Converter={StaticResource ParametricBooleanToVisibilityConverter}, ConverterParameter=false}" />
+                </StackPanel>
+                <Border
+                    Height="40"
+                    Margin="4,10,0,0"
+                    BorderBrush="DarkGray"
+                    BorderThickness="1">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton
+                            x:Name="UseMicrophone"
+                            Content="Microphone"
+                            IsChecked="{Binding UseMicrophone, Mode=TwoWay}" />
+                        <RadioButton
+                            x:Name="UseFile"
+                            Content="File(.wav)"
+                            IsChecked="{Binding UseMicrophone, Mode=TwoWay, Converter={StaticResource BooleanInverter}}" />
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

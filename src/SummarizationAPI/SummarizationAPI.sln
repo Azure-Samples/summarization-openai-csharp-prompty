@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SummarizationAPI.Console", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Summarization.Evaluation.Tests", "Summarization.Evaluation.Tests\Summarization.Evaluation.Tests.csproj", "{5EC186AA-F627-4DF1-B1D1-41A439B7C628}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeechRecognition", "SpeechRecognition\SpeechRecognition.csproj", "{CD88FBE9-4834-4B30-B7DE-F4C87BFE87A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{5EC186AA-F627-4DF1-B1D1-41A439B7C628}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EC186AA-F627-4DF1-B1D1-41A439B7C628}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EC186AA-F627-4DF1-B1D1-41A439B7C628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD88FBE9-4834-4B30-B7DE-F4C87BFE87A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD88FBE9-4834-4B30-B7DE-F4C87BFE87A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD88FBE9-4834-4B30-B7DE-F4C87BFE87A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD88FBE9-4834-4B30-B7DE-F4C87BFE87A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

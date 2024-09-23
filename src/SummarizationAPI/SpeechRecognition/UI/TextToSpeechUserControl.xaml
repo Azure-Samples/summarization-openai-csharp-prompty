@@ -1,0 +1,101 @@
+﻿<UserControl
+    x:Class="SpeechRecognition.UI.TextToSpeechUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SpeechRecognition.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border>
+        <Grid Margin="5,0,5,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <DockPanel Margin="0,10,0,0">
+                <Button
+                    Name="Clean"
+                    Width="40"
+                    BorderThickness="0"
+                    Click="Clean_Click"
+                    Content="Clean"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding IsAudioGenerated}" />
+                <TextBlock
+                    FontWeight="Bold"
+                    Text="Generated adio. Click to play."
+                    Visibility="{Binding IsAudioGenerated, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            </DockPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <DockPanel>
+                    <ItemsControl IsTabStop="False" ItemsSource="{Binding Audio}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="auto" Margin="4">
+                                    <Button
+                                        x:Name="SoundPlayer"
+                                        Width="40"
+                                        HorizontalAlignment="Left"
+                                        BorderThickness="0"
+                                        Click="SoundPlayer_Click"
+                                        Cursor="Hand"
+                                        ToolTip="Click to Play">
+                                        <Image
+                                            Width="80"
+                                            Height="20"
+                                            Source="../Icons/sound-waves.png" />
+                                    </Button>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <StackPanel
+                        VerticalAlignment="Bottom"
+                        DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        Visibility="{Binding IsServiceStarted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Label
+                            Margin="0"
+                            Content="Working on it"
+                            FontWeight="Bold" />
+                        <Label Margin="0" Content="{Binding ServiceInProgressDots, Mode=TwoWay}" />
+                    </StackPanel>
+                </DockPanel>
+            </ScrollViewer>
+            <DockPanel
+                Grid.Row="2"
+                Margin="0,10,0,5"
+                VerticalAlignment="Bottom">
+                <Button
+                    Width="70"
+                    Height="40"
+                    Margin="5,0,0,2"
+                    HorizontalAlignment="Right"
+                    Click="Button_ClickAsync"
+                    Content="Convert"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding IsAbleToConvertTextToSpeech}"
+                    ToolTip="Click to generate adio from the text" />
+                <TextBox
+                    Height="40"
+                    HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    AcceptsReturn="True"
+                    Text="{Binding TextToSpeak, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto" />
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>
