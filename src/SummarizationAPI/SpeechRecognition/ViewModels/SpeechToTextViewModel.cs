@@ -27,6 +27,7 @@ namespace SpeechRecognition.ViewModels
 
         private ObservableCollection<SpeechToTextDataModel> _recognizedSpeechToText;
         public SpeechToTextViewModel(ServiceConfiguration config)
+            : base()
         {
             _serviceConfiguration = config;
 
@@ -44,8 +45,17 @@ namespace SpeechRecognition.ViewModels
             _summarizationService = serviceProvider.GetRequiredService<SummarizationService>();
 
             _recognizedSpeechToText = [];
+            _recognizedSpeechToText.CollectionChanged += OnRecognizedSpeechToTextCollectionChanged;
 
         }
+
+        private void OnRecognizedSpeechToTextCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsSpeechRecognizedToText));
+        }
+
+
+        public bool IsSpeechRecognizedToText => RecognizedSpeechToText.Count > 0;
 
         public bool UseMicrophone
         {
@@ -63,17 +73,17 @@ namespace SpeechRecognition.ViewModels
             set
             {
                 _recognizedSpeechToText = value;
-                OnPropertyChanged(nameof(RecognizedSpeechToText));
+                OnPropertyChanged();
             }
         }
 
         public string SpeechFilePath { get; set; }
 
 
-        public async Task SummerizeSpeech()
+        public async Task SummarizeSpeech()
         {
-            //this.IsCognitiveServicesToThink = true;
-            //speechRecognizerInProgress.Invoke(new(), null);
+            this.IsServiceStarted = true;
+            this.OnServiceInProgress();
             SpeechRecognitionResult result = await RecognizeSpeechAsync();
             switch (result?.Reason)
             {
@@ -108,7 +118,7 @@ namespace SpeechRecognition.ViewModels
                     break;
             }
 
-            //IsCognitiveServicesToThink = false;
+            IsServiceStarted = false;
         }
 
         private async Task<SpeechRecognitionResult?> RecognizeSpeechAsync()

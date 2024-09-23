@@ -8,6 +8,12 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Border>
         <Grid Margin="5,0,5,0">
             <Grid.RowDefinitions>
@@ -15,19 +21,25 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            <DockPanel Margin="0,10,0,0">
+                <Button
+                    Name="Clean"
+                    Width="40"
+                    BorderThickness="0"
+                    Click="Clean_Click"
+                    Content="Clean"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding IsAudioGenerated}" />
+                <TextBlock
+                    FontWeight="Bold"
+                    Text="Generated adio. Click to play."
+                    Visibility="{Binding IsAudioGenerated, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <!--<TextBlock Grid.Row="0" Text="Text to speech convrter" />-->
-            <TextBlock
-                Margin="0,10,0,0"
-                FontWeight="Bold"
-                Text="Generated adio. Click to play."
-                Visibility="{Binding Visibility}" />
+            </DockPanel>
+
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <DockPanel>
-                    <ItemsControl
-                        Name="ChatMessageList"
-                        IsTabStop="False"
-                        ItemsSource="{Binding Audio}">
+                    <ItemsControl IsTabStop="False" ItemsSource="{Binding Audio}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Width="auto" Margin="4">
@@ -48,6 +60,17 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                    <StackPanel
+                        VerticalAlignment="Bottom"
+                        DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        Visibility="{Binding IsServiceStarted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Label
+                            Margin="0"
+                            Content="Working on it"
+                            FontWeight="Bold" />
+                        <Label Margin="0" Content="{Binding ServiceInProgressDots, Mode=TwoWay}" />
+                    </StackPanel>
                 </DockPanel>
             </ScrollViewer>
             <DockPanel

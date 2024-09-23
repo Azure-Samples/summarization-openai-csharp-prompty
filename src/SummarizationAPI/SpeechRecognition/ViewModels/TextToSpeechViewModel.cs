@@ -19,11 +19,12 @@ namespace SpeechRecognition.ViewModels
         private ObservableCollection<byte[]> _audio;
         private string _textToSpeak;
         public TextToSpeechViewModel(ServiceConfiguration serviceConfiguration)
+            : base()
         {
             _serviceConfiguration = serviceConfiguration;
 
             _audio = [];
-            _audio.CollectionChanged += Audio_CollectionChanged;
+            Audio.CollectionChanged += Audio_CollectionChanged;
         }
 
 
@@ -34,14 +35,12 @@ namespace SpeechRecognition.ViewModels
             {
                 _audio = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(Visibility));
             }
         }
-        public Visibility Visibility
-        {
-            get => Audio.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        }
+        public bool IsAudioGenerated => Audio.Count > 0;
+            
+
 
         public bool IsAbleToConvertTextToSpeech
         {
@@ -61,12 +60,15 @@ namespace SpeechRecognition.ViewModels
         }
         private void Audio_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged(nameof(Visibility));
+            OnPropertyChanged(nameof(IsAudioGenerated));
         }
 
 
         public async Task ProcessTextToSpeechAsync()
         {
+            this.IsServiceStarted = true;
+            this.OnServiceInProgress();
+
             // Create a speech config with the specified subscription key and service region.
             var speechConfig = SpeechConfig.FromAuthorizationToken(_serviceConfiguration.AuthToken, _serviceConfiguration.SpeechRegion);
             //speechConfig.SpeechRecognitionLanguage = "en-US";
@@ -78,6 +80,7 @@ namespace SpeechRecognition.ViewModels
             using var result = await speechSynthesizer.SpeakTextAsync(TextToSpeak);
 
             Audio.Add(result.AudioData);
+            IsServiceStarted = false;
         }
     }
 }

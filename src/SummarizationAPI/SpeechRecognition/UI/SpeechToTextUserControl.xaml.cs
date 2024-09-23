@@ -19,7 +19,7 @@ namespace SpeechRecognition.UI
         {
             if (this.DataContext is SpeechToTextViewModel viewModel)
             {
-                await viewModel.SummerizeSpeech();
+                await viewModel.SummarizeSpeech();
             }
         }
 
@@ -30,9 +30,17 @@ namespace SpeechRecognition.UI
                 viewModel.BrowseToAttachFile();
                 if (viewModel.SpeechFilePath != null)
                 {
-                    await viewModel.SummerizeSpeech();
+                    await viewModel.SummarizeSpeech();
                 }
 
+            }
+        }
+
+        private void Clean_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is SpeechToTextViewModel viewModel)
+            {
+                viewModel.RecognizedSpeechToText.Clear();
             }
         }
     }

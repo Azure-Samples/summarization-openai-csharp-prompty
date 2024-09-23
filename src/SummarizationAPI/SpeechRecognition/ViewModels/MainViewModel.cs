@@ -1,19 +1,24 @@
-﻿using SpeechRecognition.ViewModels;
+﻿using Microsoft.Identity.Client.NativeInterop;
+using SpeechRecognition.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace SpeechRecognition
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : BaseViewModel
     {
         private bool _isSpeechToTextSelected;
         private ServiceConfiguration _serviceConfiguration;
+        private event EventHandler _serviceInProgress;
+        private bool _isServiceStarted;
+        private string _serviceInProgressDots;
         public MainViewModel()
         {
             _isSpeechToTextSelected = true;
             _serviceConfiguration = new ServiceConfiguration();
             SpeechToTextViewModel = new SpeechToTextViewModel(_serviceConfiguration);
             TextToSpeechViewModel = new TextToSpeechViewModel(_serviceConfiguration);
+            _serviceInProgress += OnServiceInProgress;
         }
 
 
@@ -21,7 +26,6 @@ namespace SpeechRecognition
 
         public TextToSpeechViewModel TextToSpeechViewModel { get; } 
 
-        public event PropertyChangedEventHandler? PropertyChanged;
         public bool IsSpeechToTextSelected
         {
             get => _isSpeechToTextSelected;
@@ -34,11 +38,6 @@ namespace SpeechRecognition
                 }
             }
         }
-
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-       
+     
     }
 }

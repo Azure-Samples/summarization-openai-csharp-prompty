@@ -15,6 +15,8 @@ namespace SpeechRecognition.Model
 
         public string SpeechSummaryEvaluationScore { get; set; }
 
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
+
+        public bool IsErrorResult => !string.IsNullOrEmpty(ErrorMessage);
     }
 }

@@ -31,13 +31,14 @@
                 <Setter Property="FontSize" Value="16" />
             </Style>
             <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Margin" Value="5,0,0,40" />
+                <Setter Property="Margin" Value="5,25,0,0" />
             </Style>
 
             <Style TargetType="{x:Type Label}">
-                <Setter Property="Margin" Value="0,0,0,40" />
+                <Setter Property="Margin" Value="5,20,0,20" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Padding" Value="0" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -45,13 +46,24 @@
 
         <Grid Margin="5,0,0,0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <ScrollViewer>
+            <Button
+                Name="Clean"
+                Width="40"
+                Margin="0,5,10,5"
+                HorizontalAlignment="Right"
+                BorderThickness="0"
+                Click="Clean_Click"
+                Content="Clean"
+                DockPanel.Dock="Right"
+                IsEnabled="{Binding IsSpeechRecognizedToText}" />
+
+            <ScrollViewer Grid.Row="1">
                 <DockPanel>
                     <ItemsControl
-                        Name="ChatMessageList"
                         DockPanel.Dock="Top"
                         IsTabStop="False"
                         ItemsSource="{Binding RecognizedSpeechToText}">
@@ -61,52 +73,61 @@
                                     Width="auto"
                                     Margin="4"
                                     Background="LightGray">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="100" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                            <RowDefinition />
-                                        </Grid.RowDefinitions>
-                                        <Label Content="Speech text" />
-                                        <TextBlock
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            Text="{Binding SpeechText}"
-                                            TextWrapping="Wrap" />
-                                        <Label
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            Content="Summary" />
-                                        <TextBlock
-                                            Grid.Row="1"
-                                            Grid.Column="1"
-                                            Text="{Binding Summary}"
-                                            TextWrapping="Wrap" />
+                                    <StackPanel>
 
-                                        <Label
-                                            Grid.Row="2"
-                                            Grid.Column="0"
-                                            Content="Score" />
-                                        <TextBlock
-                                            Grid.Row="2"
-                                            Grid.Column="1"
-                                            Text="{Binding SpeechSummaryEvaluationScore}"
-                                            TextWrapping="Wrap" />
-                                        <Label
-                                            Grid.Row="3"
-                                            Grid.Column="0"
-                                            Content="Error" />
-                                        <TextBlock
-                                            Grid.Row="3"
-                                            Grid.Column="1"
-                                            Text="{Binding ErrorMessage}"
-                                            TextWrapping="Wrap" />
-                                    </Grid>
+                                        <Grid Visibility="{Binding IsErrorResult, Converter={StaticResource ParametricBooleanToVisibilityConverter}, ConverterParameter=False}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Label Content="Speech text" />
+                                            <TextBlock
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Text="{Binding SpeechText}"
+                                                TextWrapping="Wrap" />
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Content="Summary" />
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Text="{Binding Summary}"
+                                                TextWrapping="Wrap" />
+                                            <Label
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                Content="Score" />
+                                            <TextBlock
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Text="{Binding SpeechSummaryEvaluationScore}"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+                                        <Grid Height="auto" Visibility="{Binding IsErrorResult, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Label Content="Error" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Left"
+                                                Text="{Binding ErrorMessage}"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+
+                                    </StackPanel>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -115,14 +136,17 @@
                         VerticalAlignment="Bottom"
                         DockPanel.Dock="Bottom"
                         Orientation="Horizontal"
-                        Visibility="Collapsed">
-                        <Label Content="Text recognizing" FontSize="25" />
-                        <Label Content="{Binding CognitiveServicesThinkingInProgressDots, Mode=TwoWay}" FontSize="25" />
+                        Visibility="{Binding IsServiceStarted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Label
+                            Margin="0"
+                            Content="Working on it"
+                            FontWeight="Bold" />
+                        <Label Margin="0" Content="{Binding ServiceInProgressDots, Mode=TwoWay}" />
                     </StackPanel>
                 </DockPanel>
             </ScrollViewer>
             <DockPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 Margin="0,0,0,5"
                 VerticalAlignment="Bottom">
                 <StackPanel

@@ -58,5 +58,15 @@ namespace SpeechRecognition.UI
                 await viewModel.ProcessTextToSpeechAsync();
             }
         }
+
+        private void Clean_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (this.DataContext is TextToSpeechViewModel viewModel)
+            {
+
+                viewModel.Audio.Clear();
+            }
+        }
     }
 }
